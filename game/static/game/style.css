@@ -106,11 +106,13 @@ body {
 .terminal-body {
     flex: 1;
     padding: 15px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
+    scroll-behavior: smooth;
 }
 
 .terminal-body::-webkit-scrollbar {

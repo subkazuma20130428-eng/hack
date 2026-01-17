@@ -3341,12 +3341,16 @@ hack web
         const promptEl = document.createElement('div');
         promptEl.className = 'output-line command-line';
         promptEl.innerHTML = `<span class="prompt-text">${this.currentUser.textContent}:${this.currentLocation.textContent}$</span> <span class="user-command">${this.escapeHtml(input)}</span>`;
+        promptEl.style.animation = `fadeInLine 0.3s ease-in forwards`;
         this.terminalOutput.appendChild(promptEl);
         this.scrollToBottom();
     }
     
     printOutput(text) {
         const lines = text.split('\n');
+        const totalLines = lines.length;
+        let processedLines = 0;
+        
         lines.forEach((line, index) => {
             setTimeout(() => {
                 const outputEl = document.createElement('div');
@@ -3364,6 +3368,13 @@ hack web
                 
                 this.terminalOutput.appendChild(outputEl);
                 this.scrollToBottom();
+                
+                // 最後の行の処理が終わったら追加のスクロール
+                if (index === lines.length - 1) {
+                    setTimeout(() => {
+                        this.scrollToBottom();
+                    }, 100);
+                }
             }, index * 5); // 5msごとに行を表示
         });
     }
@@ -3375,10 +3386,23 @@ hack web
     }
     
     scrollToBottom() {
-        // 非同期でスクロール（DOMが完全に更新された後）
+        // 複数回スクロール確認を行い、確実にスクロール
+        // 即座にスクロール
+        this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        
+        // 非同期でも確認（アニメーション中の場合）
         setTimeout(() => {
             this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-        }, 0);
+        }, 10);
+        
+        setTimeout(() => {
+            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        }, 50);
+        
+        // 最後のアニメーション後もスクロール
+        setTimeout(() => {
+            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        }, 500);
     }
     
     escapeHtml(text) {
