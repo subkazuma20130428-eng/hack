@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ハッカータイパー - 本物のハッカー風タイピングゲーム</title>
+    <link rel="stylesheet" href="{% static 'game/style.css' %}">
+</head>
+<body>
+    {% csrf_token %}
+    <div class="terminal-container">
+        <!-- ハッカー風ターミナルヘッダー -->
+        <div class="terminal-header">
+            <div class="header-buttons">
+                <span class="btn-close">✕</span>
+                <span class="btn-minimize">−</span>
+                <span class="btn-maximize">□</span>
+            </div>
+            <div class="header-title">root@hacker-typer:~#</div>
+        </div>
+
+        <!-- ゲーム画面 -->
+        <div class="terminal-body">
+            <!-- プレイヤー登録画面 -->
+            <div id="loginScreen" class="screen">
+                <div class="login-content">
+                    <div class="ascii-title">web hack</div>
+                    <div class="login-form">
+                        <button id="startGameBtn" class="btn-primary">ハッキング開始</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ゲーム画面 -->
+            <div id="gameScreen" class="screen active">
+                <div class="game-layout">
+                    <!-- 左側: ゲーム画面 -->
+                    <div class="game-main">
+                        <!-- プロフィール設定パネル -->
+                        <div class="profile-panel">
+                            <div class="profile-header">👤 プロフィール</div>
+                            <div class="profile-form">
+                                <div class="form-tabs">
+                                    <button class="tab-btn active" data-tab="login">ログイン</button>
+                                    <button class="tab-btn" data-tab="register">新規作成</button>
+                                </div>
+                                
+                                <!-- ログインタブ -->
+                                <div id="login-tab" class="tab-content active">
+                                    <div class="form-group">
+                                        <label for="loginUsername">ユーザー名:</label>
+                                        <input 
+                                            type="text" 
+                                            id="loginUsername" 
+                                            class="profile-input"
+                                            placeholder="ユーザー名"
+                                        >
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="loginPassword">パスワード:</label>
+                                        <input 
+                                            type="password" 
+                                            id="loginPassword" 
+                                            class="profile-input"
+                                            placeholder="パスワード"
+                                        >
+                                    </div>
+                                    <button id="loginBtn" class="profile-btn">ログイン</button>
+                                    <button id="logoutBtn" class="profile-btn logout-btn" style="display:none; background:#ff4444;">ログアウト</button>
+                                    <div id="loginError" class="profile-error"></div>
+                                </div>
+                                
+                                <!-- 登録タブ -->
+                                <div id="register-tab" class="tab-content">
+                                    <div class="form-group">
+                                        <label for="registerUsername">ユーザー名:</label>
+                                        <input 
+                                            type="text" 
+                                            id="registerUsername" 
+                                            class="profile-input"
+                                            placeholder="ユーザー名"
+                                        >
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="registerPassword">パスワード:</label>
+                                        <input 
+                                            type="password" 
+                                            id="registerPassword" 
+                                            class="profile-input"
+                                            placeholder="パスワード"
+                                        >
+                                    </div>
+                                    <button id="registerBtn" class="profile-btn">アカウント作成</button>
+                                    <div id="registerError" class="profile-error"></div>
+                                
+                                <div id="accountStatus" class="account-status"></div>
+                            </div>
+                        </div>
+
+                        <!-- ゲーム画面 -->
+                        <div class="game-screen">
+                            <div class="game-header">
+                                <div class="status-line">
+                                    <span id="currentUser">root@hacker</span>:<span id="currentLocation">~</span>#
+                                </div>
+                            </div>
+
+                            <div class="game-content">
+                                <div id="terminalOutput" class="terminal-output"></div>
+
+                                <div class="input-section">
+                                    <div class="input-display">
+                                        <span class="prompt" id="promptText">root@hacker:~$</span>
+                                        <input 
+                                            type="text" 
+                                            id="commandInput" 
+                                            class="command-input" 
+                                            autocomplete="off"
+                                            spellcheck="false"
+                                            placeholder="コマンドを入力してください"
+                                        >
+                                        <span class="cursor">|</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- チャットパネル -->
+                    <div class="chat-section">
+                        <button id="battleBtn" class="battle-btn">⚔️ 戦う</button>
+                        <div class="chat-panel">
+                            <div class="chat-header">💬 チャット</div>
+                            <div id="chatMessages" class="chat-messages"></div>
+                            <div class="chat-input-section">
+                                <input 
+                                    type="text" 
+                                    id="chatInput" 
+                                    class="chat-input" 
+                                    placeholder="メッセージを入力..."
+                                    autocomplete="off"
+                                >
+                                <button id="sendChatBtn" class="chat-send-btn">送信</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'game/game.js' %}?v=2"></script>
+</body>
+</html>

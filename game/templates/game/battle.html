@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>バトル - ハッカータイパー</title>
+    <link rel="stylesheet" href="{% static 'game/style.css' %}">
+</head>
+<body>
+    {% csrf_token %}
+    <div class="terminal-container">
+        <!-- ハッカー風ターミナルヘッダー -->
+        <div class="terminal-header">
+            <div class="header-buttons">
+                <span class="btn-close">✕</span>
+                <span class="btn-minimize">−</span>
+                <span class="btn-maximize">□</span>
+            </div>
+            <div class="header-title">root@battle-arena:~#</div>
+        </div>
+
+        <!-- バトル画面 -->
+        <div class="terminal-body">
+            <div class="battle-arena">
+                <!-- 左側：自分の画面 -->
+                <div class="battle-player">
+                    <div class="battle-header">
+                        <span id="playerName">Player</span> - あなたのターミナル
+                    </div>
+                    
+                    <div class="battle-content">
+                        <div id="playerOutput" class="battle-output"></div>
+                        
+                        <div class="input-section">
+                            <div class="input-display">
+                                <span class="prompt" id="playerPrompt">root@terminal:~$</span>
+                                <input 
+                                    type="text" 
+                                    id="playerInput" 
+                                    class="command-input" 
+                                    autocomplete="off"
+                                    spellcheck="false"
+                                    placeholder="コマンドを入力"
+                                >
+                                <span class="cursor">|</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側：相手の画面 -->
+                <div class="battle-opponent">
+                    <div class="battle-header">
+                        <span id="opponentName">Opponent</span> - 相手のターミナル
+                    </div>
+                    
+                    <div class="battle-content">
+                        <div id="opponentOutput" class="battle-output opponent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 戻るボタン -->
+            <div class="battle-footer">
+                <a href="/" class="back-btn">← 戻る</a>
+                <div class="battle-status">
+                    <span id="battleInfo">バトル中...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'game/battle.js' %}"></script>
+    <script>
+        // ページリロード時に自動ログイン
+        function checkLoginAndRestore() {
+            let playerName = localStorage.getItem('playerName');
+            let playerPassword = localStorage.getItem('playerPassword');
+            
+            // クッキーからも確認
+            if (!playerName) {
+                const nameEQ = 'playerName=';
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.indexOf(nameEQ) === 0) {
+                        playerName = decodeURIComponent(cookie.substring(nameEQ.length));
+                        break;
+                    }
+                }
+            }
+            
+            if (!playerPassword) {
+                const nameEQ = 'playerPassword=';
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.indexOf(nameEQ) === 0) {
+                        playerPassword = decodeURIComponent(cookie.substring(nameEQ.length));
+                        break;
+                    }
+                }
+            }
+            
+            if (!playerName || !playerPassword) {
+                alert('セッションが期限切れです。ログインページに戻ります。');
+                window.location.href = '/';
+            }
+        }
+        
+        // ページ読み込み時にチェック
+        document.addEventListener('DOMContentLoaded', checkLoginAndRestore);
+    </script>
+</body>
+</html>

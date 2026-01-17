@@ -1,0 +1,38 @@
+<!-- 戦うボタン機能 - 実装完了チェック -->
+
+✅ 実装完了: 戦う (PvP バトル) ボタン
+
+【HTML構造】
+✓ battleBtn: id="battleBtn" class="battle-btn" (style="display: none")
+✓ gameContainer: id="gameContainer" - バトルモード画面コンテナ
+✓ battle-layout: クラスで左右分割レイアウト
+✓ player-side: 左側 - 自分のターミナル
+✓ opponent-side: 右側 - 相手の画面表示
+✓ opponentOutput: id="opponentOutput" - 相手のコマンド出力
+
+【JavaScript実装】
+✓ コンストラクタ: battleBtn, gameContainer, opponentOutput の参照設定済み
+✓ setupEventListeners(): battleBtn のクリックリスナー実装済み
+✓ startBattle(): バトルモード開始メソッド実装済み
+✓ displayOpponentCommand(): 相手のコマンド表示メソッド実装済み
+✓ handleLogin(): ログイン成功時にbattleBtnを表示
+✓ executeCommand(): バトルモード時に相手画面を更新
+
+【CSS スタイル】
+✓ .battle-layout: display flex (gap: 10px)
+✓ .player-side: flex: 1 (自分の画面)
+✓ .opponent-side: flex: 1 (相手の画面)
+✓ .opponent-output: 赤色テーマ (#ff6666)
+✓ .opponent-command: 相手のコマンド入力表示
+✓ .opponent-output-text: 相手のコマンド出力表示
+
+【動作フロー】
+1. ユーザーがログインするとbattleBtnが表示される
+2. ユーザーが戦うボタンをクリックする
+3. gameContainerが表示され、profile-panelが隠れる
+4. 左側に自分のターミナル、右側に相手の画面が表示される
+5. ユーザーがコマンドを入力すると、相手画面に相手のシミュレートコマンドが表示される
+
+【テスト アカウント】
+- ユーザー名: masumc
+- パスワード: kazuma20130412@@
