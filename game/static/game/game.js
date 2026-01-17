@@ -5243,84 +5243,204 @@ hack web
 
     cmdRandomOutput(command) {
         const randomOutputs = [
-            // ログファイル出力
+            // ログファイル出力（150行以上）
             () => {
-                this.printOutput(`[${new Date().toISOString()}] Processing command: ${command}\n`);
-                this.printOutput(`DEBUG: Parsing arguments...\n`);
-                this.printOutput(`DEBUG: Module loaded from /usr/lib/x86_64-linux-gnu/\n`);
-                this.printOutput(`DEBUG: Initializing memory pool (2048MB)\n`);
-                this.printOutput(`[OK] Operation completed successfully\n`);
-                this.printOutput(`INFO: Session ID: ${Math.random().toString(36).substring(7)}\n`);
-            },
-            // システムメッセージ
-            () => {
-                this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] usb 1-1: new high-speed USB device number 2\n`);
-                this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] usb 1-1: New USB device found\n`);
-                this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] usb-storage 1-1:1.0: USB Mass Storage device detected\n`);
-                this.printOutput(`systemd: Started Database Service.\n`);
-                this.printOutput(`apache2[${Math.floor(Math.random() * 10000)}]: [notice] Apache/2.4.41 configured\n`);
-            },
-            // 処理ログ
-            () => {
-                for(let i = 0; i < 8; i++) {
-                    this.printOutput(`Processing: ${Math.random().toString(36).substring(2, 10)} [${Math.floor(Math.random() * 100)}%]\n`);
+                for(let i = 0; i < 150; i++) {
+                    this.printOutput(`[${new Date().toISOString()}] Processing command: ${command} [${i}]\n`);
+                    this.printOutput(`DEBUG: Parsing arguments... module_${i}\n`);
+                    this.printOutput(`DEBUG: Module loaded from /usr/lib/x86_64-linux-gnu/lib_${i}.so\n`);
+                    this.printOutput(`DEBUG: Initializing memory pool (${Math.floor(Math.random() * 8192)}MB)\n`);
+                    this.printOutput(`DEBUG: Thread ${i}: Spawning worker process...\n`);
+                    this.printOutput(`DEBUG: Thread ${i}: Allocated ${Math.floor(Math.random() * 1000)}MB\n`);
                 }
-                this.printOutput(`Compilation successful\n`);
-                this.printOutput(`Linking modules...\n`);
-                this.printOutput(`Build completed in ${Math.floor(Math.random() * 5000)}ms\n`);
+                this.printOutput(`[OK] Operation completed successfully after ${Math.floor(Math.random() * 50000)}ms\n`);
+                this.printOutput(`INFO: Session ID: ${Math.random().toString(36).substring(7)}\n`);
+                this.printOutput(`INFO: Connection poolsize: ${Math.floor(Math.random() * 500)}\n`);
+                this.printOutput(`INFO: Peak memory: ${Math.floor(Math.random() * 10000)}MB\n`);
+                this.printOutput(`INFO: Garbage collection cycles: ${Math.floor(Math.random() * 100)}\n`);
+                for(let i = 0; i < 50; i++) {
+                    this.printOutput(`TRACE: [${i}] Function call stack trace\n`);
+                }
             },
-            // ネットワーク出力
+            // システムメッセージ（200行以上）
             () => {
-                this.printOutput(`CONNECT: Establishing connection to remote server\n`);
-                this.printOutput(`DNS resolved: ${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}\n`);
-                this.printOutput(`SSL/TLS Handshake completed\n`);
-                this.printOutput(`Certificate verified\n`);
-                this.printOutput(`Bytes sent: ${Math.floor(Math.random() * 100000)}\n`);
-                this.printOutput(`Bytes received: ${Math.floor(Math.random() * 200000)}\n`);
+                for(let i = 0; i < 200; i++) {
+                    this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] usb ${i}-${Math.floor(Math.random() * 10)}: new high-speed USB device number ${i}\n`);
+                    this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] usb ${i}-${Math.floor(Math.random() * 10)}: New USB device found, idVendor=${Math.floor(Math.random() * 65535).toString(16)}, idProduct=${Math.floor(Math.random() * 65535).toString(16)}\n`);
+                    this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] usb-storage ${i}-${Math.floor(Math.random() * 10)}:1.0: USB Mass Storage device detected\n`);
+                    this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] sd ${i}:0:0:0: [sd${String.fromCharCode(97+(i%26))}] ${Math.floor(Math.random() * 10000000)} 512-byte logical blocks\n`);
+                    this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] sd ${i}:0:0:0: [sd${String.fromCharCode(97+(i%26))}] Write Protect is off\n`);
+                }
+                this.printOutput(`systemd: Started Database Service.\n`);
+                this.printOutput(`systemd: Started Network Interface.\n`);
+                this.printOutput(`systemd: Started SSH Service.\n`);
+                this.printOutput(`systemd: Started Web Server.\n`);
+                this.printOutput(`apache2[${Math.floor(Math.random() * 50000)}]: [notice] Apache/2.4.41 configured\n`);
+                this.printOutput(`apache2[${Math.floor(Math.random() * 50000)}]: [notice] resuming broken connection\n`);
+                this.printOutput(`postfix[${Math.floor(Math.random() * 50000)}]: postfix/master[${Math.floor(Math.random() * 50000)}]: daemon started\n`);
+                for(let i = 0; i < 50; i++) {
+                    this.printOutput(`systemd[1]: Started service ${Math.random().toString(36).substring(2, 10)}.service\n`);
+                }
             },
-            // パッケージ管理
+            // 処理ログ（250行以上）
+            () => {
+                this.printOutput(`Starting compilation process...\n`);
+                this.printOutput(`Detecting build environment...\n`);
+                for(let i = 0; i < 250; i++) {
+                    const progress = Math.floor((i / 250) * 100);
+                    this.printOutput(`[${progress}%] Processing: ${Math.random().toString(36).substring(2, 10)}.cpp\n`);
+                    this.printOutput(`[${progress}%] Compiling: ${Math.random().toString(36).substring(2, 20)}\n`);
+                    this.printOutput(`[${progress}%] Linking object ${i}...\n`);
+                    this.printOutput(`[${progress}%] Optimizing code...\n`);
+                    this.printOutput(`[${progress}%] Inline function expansion: ${Math.floor(Math.random() * 100)}%\n`);
+                }
+                this.printOutput(`Compilation successful - No errors\n`);
+                this.printOutput(`Linking modules...\n`);
+                for(let i = 0; i < 50; i++) {
+                    this.printOutput(`Building archive lib${Math.random().toString(36).substring(2, 8)}.a\n`);
+                    this.printOutput(`Linking library: ${Math.floor(Math.random() * 1000)}KB\n`);
+                }
+                this.printOutput(`Build completed in ${Math.floor(Math.random() * 60000)}ms\n`);
+                this.printOutput(`Binary size: ${Math.floor(Math.random() * 2000)}MB\n`);
+                this.printOutput(`Stripping symbols...\n`);
+                this.printOutput(`Final binary size: ${Math.floor(Math.random() * 500)}MB\n`);
+            },
+            // ネットワーク出力（300行以上）
+            () => {
+                this.printOutput(`CONNECT: Initiating TCP handshake to remote server\n`);
+                for(let i = 0; i < 150; i++) {
+                    this.printOutput(`DNS attempt ${i}: Resolving ${Math.random().toString(36).substring(2, 8)}.example.com\n`);
+                    this.printOutput(`DNS: Trying nameserver ${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}\n`);
+                }
+                this.printOutput(`DNS resolved: ${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}\n`);
+                this.printOutput(`TTL: ${Math.floor(Math.random() * 86400)}\n`);
+                this.printOutput(`Establishing TLS connection...\n`);
+                this.printOutput(`SSL/TLS Version: TLSv1.3\n`);
+                this.printOutput(`Cipher: ECDHE-RSA-AES256-GCM-SHA384\n`);
+                for(let i = 0; i < 100; i++) {
+                    this.printOutput(`SSL/TLS Handshake progress: ${i}%\n`);
+                    this.printOutput(`TLS: Received certificate chain of length ${Math.floor(Math.random() * 5) + 1}\n`);
+                }
+                this.printOutput(`SSL/TLS Handshake completed in ${Math.floor(Math.random() * 2000)}ms\n`);
+                this.printOutput(`Certificate verified - Chain length: ${Math.floor(Math.random() * 5) + 1}\n`);
+                this.printOutput(`Certificate CN: *.${Math.random().toString(36).substring(2, 8)}.com\n`);
+                for(let i = 0; i < 50; i++) {
+                    this.printOutput(`Packet ${i}: Transmitted ${Math.floor(Math.random() * 65535)} bytes\n`);
+                    this.printOutput(`Packet ${i}: Received ${Math.floor(Math.random() * 65535)} bytes\n`);
+                }
+                this.printOutput(`Bytes sent: ${Math.floor(Math.random() * 10000000)}\n`);
+                this.printOutput(`Bytes received: ${Math.floor(Math.random() * 50000000)}\n`);
+                this.printOutput(`Packets sent: ${Math.floor(Math.random() * 500000)}\n`);
+                this.printOutput(`Packets received: ${Math.floor(Math.random() * 1000000)}\n`);
+                this.printOutput(`Connection time: ${Math.floor(Math.random() * 10000)}ms\n`);
+            },
+            // パッケージ管理（280行以上）
             () => {
                 this.printOutput(`Reading package lists... Done\n`);
-                this.printOutput(`Building dependency tree\n`);
-                this.printOutput(`${Math.floor(Math.random() * 50)} upgraded, ${Math.floor(Math.random() * 30)} newly installed\n`);
+                this.printOutput(`Building dependency tree... Done\n`);
+                for(let i = 0; i < 280; i++) {
+                    this.printOutput(`Processing ${i}: ${Math.random().toString(36).substring(2, 10)}-${Math.floor(Math.random() * 100)}.0\n`);
+                    this.printOutput(`Resolving dependencies for package ${i}...\n`);
+                }
+                this.printOutput(`${Math.floor(Math.random() * 200)} upgraded, ${Math.floor(Math.random() * 100)} newly installed, ${Math.floor(Math.random() * 50)} removed\n`);
+                for(let i = 0; i < 150; i++) {
+                    this.printOutput(`Unpacking ${i}/${150}: ${Math.random().toString(36).substring(2, 12)}:amd64 (${Math.floor(Math.random() * 500)}MB)\n`);
+                    this.printOutput(`Extracting files from package ${i}...\n`);
+                }
                 this.printOutput(`Processing triggers for ${command}...\n`);
-                this.printOutput(`Setting up packages...\n`);
-                this.printOutput(`Done\n`);
+                for(let i = 0; i < 100; i++) {
+                    this.printOutput(`Setting up ${Math.random().toString(36).substring(2, 12)} (${Math.floor(Math.random() * 100)}.${Math.floor(Math.random() * 100)})\n`);
+                    this.printOutput(`Configuring package ${i}...\n`);
+                }
+                this.printOutput(`Done - Total installation time: ${Math.floor(Math.random() * 120000)}ms\n`);
             },
-            // ファイルシステム操作
+            // ファイルシステム操作（350行以上）
             () => {
                 this.printOutput(`Scanning file system...\n`);
-                for(let i = 0; i < 6; i++) {
-                    this.printOutput(`Indexing directory: /var/${Math.random().toString(36).substring(2, 8)}/\n`);
+                for(let i = 0; i < 350; i++) {
+                    this.printOutput(`Indexing directory: /var/${Math.random().toString(36).substring(2, 8)}/ [${Math.floor((i/350)*100)}%]\n`);
+                    this.printOutput(`Scanning inode ${i}: ${Math.random().toString(36).substring(2, 15)}\n`);
                 }
-                this.printOutput(`Total files: ${Math.floor(Math.random() * 50000)}\n`);
-                this.printOutput(`Total size: ${Math.floor(Math.random() * 500)}GB\n`);
+                for(let i = 0; i < 200; i++) {
+                    this.printOutput(`Found file: ${Math.random().toString(36).substring(2, 15)}.log (${Math.floor(Math.random() * 5000)}MB)\n`);
+                    this.printOutput(`Inode ${i}: Permissions ${(Math.random() * 10000).toString(8)}, UID ${Math.floor(Math.random() * 1000)}\n`);
+                }
+                this.printOutput(`Total files indexed: ${Math.floor(Math.random() * 5000000)}\n`);
+                this.printOutput(`Total directories: ${Math.floor(Math.random() * 500000)}\n`);
+                this.printOutput(`Total size: ${Math.floor(Math.random() * 50000)}GB\n`);
+                this.printOutput(`Cache updated: ${Math.floor(Math.random() * 100)}%\n`);
+                for(let i = 0; i < 100; i++) {
+                    this.printOutput(`Sector ${i}: Read time ${Math.floor(Math.random() * 500)}ms\n`);
+                }
             },
-            // セキュリティスキャン
+            // セキュリティスキャン（400行以上）
             () => {
-                this.printOutput(`[*] Security scan initiated\n`);
-                this.printOutput(`[*] Scanning for vulnerabilities...\n`);
-                this.printOutput(`[+] Found ${Math.floor(Math.random() * 20)} potential threats\n`);
-                this.printOutput(`[+] Quarantined ${Math.floor(Math.random() * 10)} suspicious files\n`);
-                this.printOutput(`[*] Running deep analysis...\n`);
+                this.printOutput(`[*] Security scan initiated - Full system scan\n`);
+                this.printOutput(`[*] Scanning for viruses, malware, and rootkits...\n`);
+                this.printOutput(`[*] Loading virus definitions...\n`);
+                for(let i = 0; i < 300; i++) {
+                    this.printOutput(`[*] Scanning: ${Math.random().toString(36).substring(2, 20)}.bin [${Math.floor((i/300)*100)}%]\n`);
+                    this.printOutput(`[*] Analyzing behavior pattern ${i}...\n`);
+                }
+                this.printOutput(`[+] Found ${Math.floor(Math.random() * 150)} potential threats\n`);
+                for(let i = 0; i < 100; i++) {
+                    this.printOutput(`[!] WARNING: Suspicious activity in ${Math.random().toString(36).substring(2, 10)}.dll\n`);
+                    this.printOutput(`[!] Risk level: ${Math.floor(Math.random() * 100)}%\n`);
+                }
+                this.printOutput(`[+] Quarantined ${Math.floor(Math.random() * 80)} suspicious files\n`);
+                this.printOutput(`[*] Running deep analysis on ${Math.floor(Math.random() * 500)} files...\n`);
+                this.printOutput(`[*] Behavioral analysis: ${Math.floor(Math.random() * 100)}% complete\n`);
+                for(let i = 0; i < 50; i++) {
+                    this.printOutput(`[*] Deep scan: Processing file ${i}...\n`);
+                }
                 this.printOutput(`[OK] Scan completed - System clean\n`);
+                this.printOutput(`[OK] Total scan time: ${Math.floor(Math.random() * 300000)}ms\n`);
             },
-            // データベース操作
+            // データベース操作（320行以上）
             () => {
-                this.printOutput(`Connecting to database server...\n`);
-                this.printOutput(`Authentication successful\n`);
-                this.printOutput(`Executing query: SELECT * FROM ${command}_backup WHERE timestamp > ${Date.now()}\n`);
-                this.printOutput(`Query returned ${Math.floor(Math.random() * 1000)} rows\n`);
-                this.printOutput(`Replication lag: ${Math.floor(Math.random() * 100)}ms\n`);
-            },
-            // クラウド同期
-            () => {
-                this.printOutput(`[SYNC] Initiating cloud synchronization\n`);
-                this.printOutput(`[SYNC] Connecting to cloud server...\n`);
-                for(let i = 0; i < 5; i++) {
-                    this.printOutput(`[SYNC] Uploading: file_${i}.dat (${Math.floor(Math.random() * 100)}MB)\n`);
+                this.printOutput(`Connecting to database server at ${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}:${Math.floor(Math.random() * 60000) + 1024}\n`);
+                this.printOutput(`Authentication successful - User: ${Math.random().toString(36).substring(2, 8)}\n`);
+                for(let i = 0; i < 280; i++) {
+                    this.printOutput(`Executing query ${i}: SELECT * FROM ${command}_backup_${i} WHERE timestamp > ${Date.now() - Math.floor(Math.random() * 1000000000)}\n`);
+                    this.printOutput(`Query ${i}: Scanning ${Math.floor(Math.random() * 100000)} rows\n`);
                 }
-                this.printOutput(`[OK] All files synchronized\n`);
+                this.printOutput(`Query returned ${Math.floor(Math.random() * 1000000)} rows total\n`);
+                this.printOutput(`Data size: ${Math.floor(Math.random() * 10000)}MB\n`);
+                this.printOutput(`Replication lag: ${Math.floor(Math.random() * 2000)}ms\n`);
+                this.printOutput(`Slave sync: ${Math.floor(Math.random() * 100)}%\n`);
+                for(let i = 0; i < 30; i++) {
+                    this.printOutput(`Replica ${i}: OK (${Math.floor(Math.random() * 3000)}ms lag)\n`);
+                    this.printOutput(`Replica ${i}: Bytes behind master: ${Math.floor(Math.random() * 1000000)}\n`);
+                }
+                this.printOutput(`Database integrity check: PASSED\n`);
+                this.printOutput(`Query performance: ${Math.floor(Math.random() * 20000)}ms\n`);
+                for(let i = 0; i < 50; i++) {
+                    this.printOutput(`Table ${i}: Optimization complete\n`);
+                }
+            },
+            // クラウド同期（380行以上）
+            () => {
+                this.printOutput(`[SYNC] Initiating cloud synchronization process\n`);
+                this.printOutput(`[SYNC] Connecting to cloud server at ${Math.random().toString(36).substring(2, 8)}.cloud.local\n`);
+                this.printOutput(`[SYNC] Authentication: ${Math.random().toString(36).substring(2, 12)}\n`);
+                this.printOutput(`[SYNC] Scanning local files...\n`);
+                for(let i = 0; i < 300; i++) {
+                    this.printOutput(`[SYNC] Uploading: file_${i}.dat (${Math.floor(Math.random() * 1000)}MB) [${Math.floor((i/300)*100)}%]\n`);
+                    this.printOutput(`[SYNC] Chunk ${i}: Compressed size ${Math.floor(Math.random() * 500)}MB\n`);
+                }
+                this.printOutput(`[SYNC] Verifying integrity...\n`);
+                for(let i = 0; i < 150; i++) {
+                    this.printOutput(`[SYNC] Checking: chunk_${i} SHA256: ${Math.random().toString(36).substring(2, 18)}\n`);
+                    this.printOutput(`[SYNC] Verification: chunk_${i} OK\n`);
+                }
+                this.printOutput(`[SYNC] Total uploaded: ${Math.floor(Math.random() * 500000)}MB\n`);
+                this.printOutput(`[SYNC] Bandwidth: ${Math.floor(Math.random() * 500)}MB/s\n`);
+                this.printOutput(`[SYNC] Average latency: ${Math.floor(Math.random() * 100)}ms\n`);
+                this.printOutput(`[SYNC] Sync time: ${Math.floor(Math.random() * 600000)}ms\n`);
+                for(let i = 0; i < 50; i++) {
+                    this.printOutput(`[SYNC] Creating backup ${i}...\n`);
+                }
+                this.printOutput(`[OK] All files synchronized successfully\n`);
             }
         ];
 
