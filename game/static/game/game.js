@@ -3353,7 +3353,11 @@ hack web
     }
     
     printOutput(text) {
-        const lines = text.split('\n');
+        let lines = text.split('\n');
+        // 末尾の空行を削除
+        while (lines.length > 0 && lines[lines.length - 1] === '') {
+            lines.pop();
+        }
         const totalLines = lines.length;
         let processedLines = 0;
         
