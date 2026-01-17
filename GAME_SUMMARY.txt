@@ -1,0 +1,249 @@
+🎮 HACKER TYPER GAME - 完全ガイド
+================================
+
+✨ 本物のハッカー風ターミナルシミュレーターゲーム
+🚀 330+ のコマンド実装
+🎯 マルチプレイヤー対戦可能
+💬 グローバルチャット機能
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1️⃣  インストール
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【最も簡単な方法】
+Windows:      ダブルクリック → RUN_GAME.bat
+Linux/macOS:  bash RUN_GAME.sh
+
+【Python を使用】
+python start_game.py
+
+【詳細なセットアップ】
+INSTALL.txt または SETUP_GUIDE.md を参照
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2️⃣  ゲーム開始
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. サーバーを起動（RUN_GAME.bat または start_game.py）
+2. ブラウザで http://localhost:8000 を開く
+3. 「ハッキング開始」をクリック
+4. アカウントでログイン
+
+【テストアカウント】
+ユーザー名: masumc
+パスワード: kazuma20130412@@
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3️⃣  ゲームプレイ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【基本操作】
+- コマンドを入力して Enter キーを押す
+- Tab キーでコマンド/ファイル名を補完
+- help コマンドでコマンド一覧を表示
+- clear で画面をクリア
+
+【コマンド例】
+ls                  ディレクトリ一覧を表示
+pwd                 現在のディレクトリを表示
+cat secret.txt      ファイル内容を表示
+mkdir directory     ディレクトリを作成
+cd /home            ディレクトリを移動
+ping google.com     Ping を送信
+ssh user@host       SSH 接続
+hack                ハッキング実行
+help                すべてのコマンド表示
+
+【スコア獲得】
+基本コマンド:        5-20 ポイント
+ネットワーク:        15-25 ポイント
+セキュリティ:        25-40 ポイント
+ハッキング:          40-100 ポイント
+秘密ファイル発見:    +100 ボーナス
+
+【対戦モード】
+1. 「戦う」ボタンをクリック
+2. 相手を探す（マッチング）
+3. コマンドを入力して対戦
+4. 相手の画面にコマンド出力が表示される
+
+【チャット機能】
+1. 「チャット」タブをクリック
+2. メッセージを入力して送信
+3. 他のプレイヤーと会話
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4️⃣  利用可能なコマンド（330+）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【ファイル・ディレクトリ操作】
+ls, ls -la, ls -l, cat, pwd, cd, mkdir, touch
+nano, rm, cp, mv, chmod, chown, find, grep, file
+
+【システム情報】
+whoami, id, groups, uname, uptime, date, df, du, free
+ps, top, systeminfo, lscpu, lsblk, neofetch
+
+【ネットワーク】
+ping, tracert, nmap, netstat, ifconfig, ipconfig
+ssh, telnet, ftp, curl, wget, dig, whois, arp
+
+【ハッキングツール】
+sqlmap, hydra, aircrack-ng, metasploit, john, hashcat
+nessus, burp, wireshark, reverse-shell, exploit, crack
+
+【開発ツール】
+gcc, python, node, ruby, perl, java, rust, go
+git, docker, npm, pip, gradle, maven, webpack
+
+【構成管理】
+terraform, ansible, puppet, chef, salt, cloudformation
+
+【その他】
+tar, gzip, zip, openssl, gpg, base64, hex, diff
+
+➡️  "help" コマンドで全リスト表示！
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5️⃣  トラブルシューティング
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ ポート 8000 が既に使用中
+→ python manage.py runserver 0.0.0.0:9000
+
+❌ "Module not found: django"
+→ pip install django
+
+❌ ゲーム画面が表示されない
+→ http://localhost:8000/ を開く
+
+❌ スタイルが崩れている
+→ python manage.py collectstatic --noinput
+
+❌ データベースエラー
+→ db.sqlite3 を削除して再起動
+
+❌ サーバーが起動しない
+→ python test_setup.py で動作確認
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6️⃣  プロジェクト構造
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+hack/
+├── 🎮 ゲームアプリケーション
+│   ├── game/
+│   │   ├── templates/game/
+│   │   │   ├── index.html       メインゲーム画面
+│   │   │   └── battle.html      バトル画面
+│   │   ├── static/game/
+│   │   │   ├── game.js          ゲームロジック (2200+ 行)
+│   │   │   ├── battle.js        バトルロジック
+│   │   │   └── style.css        スタイル
+│   │   ├── views.py             API エンドポイント
+│   │   ├── urls.py              URL ルーティング
+│   │   └── models.py            データモデル
+│   │
+│   ├── 🔧 Django 設定
+│   ├── hacker_typer/
+│   │   ├── settings.py          Django 設定
+│   │   ├── urls.py              メイン URL ルーティング
+│   │   └── wsgi.py              WSGI 設定
+│   │
+│   ├── 📦 ユーティリティ
+│   ├── manage.py                Django 管理コマンド
+│   ├── start_game.py            起動スクリプト (Python)
+│   ├── RUN_GAME.bat             起動スクリプト (Windows)
+│   ├── RUN_GAME.sh              起動スクリプト (Linux/Mac)
+│   ├── test_setup.py            動作確認テスト
+│   │
+│   ├── 📄 ドキュメント
+│   ├── README.md                詳細ドキュメント
+│   ├── SETUP_GUIDE.md           セットアップガイド
+│   ├── INSTALL.txt              インストール方法
+│   ├── START_HERE.txt           クイックスタート
+│   ├── GAME_SUMMARY.txt         このファイル
+│   │
+│   └── 📊 データ
+│       ├── db.sqlite3           SQLite データベース
+│       └── requirements.txt      Python 依存関係
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7️⃣  機能一覧
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ 330+ ハッキングコマンド
+✅ Tab キーによる自動補完
+✅ ゲーム内チャット（グローバル）
+✅ マルチプレイヤー対戦モード
+✅ スコアとランキング
+✅ アカウント管理
+✅ コマンド履歴
+✅ コマンド説明（help）
+✅ ハッキング風の演出
+✅ レスポンシブデザイン
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8️⃣  技術仕様
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+【バックエンド】
+Django 5.2          Web フレームワーク
+SQLite              データベース
+Python 3.8+         プログラミング言語
+
+【フロントエンド】
+HTML5               マークアップ
+CSS3                スタイリング
+JavaScript (ES6+)   インタラクション
+Fetch API           非同期通信
+
+【API エンドポイント】
+GET  /               メインゲーム
+GET  /battle/        バトル画面
+POST /api/login/     ログイン
+POST /api/register/  アカウント作成
+POST /api/send-chat/ チャット送信
+GET  /api/get-chat/  チャット取得
+POST /api/find-opponent/      対戦相手検索
+POST /api/battle-command/     コマンド送信
+GET  /api/get-opponent-commands/ 相手のコマンド取得
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9️⃣  セキュリティに関する注意
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️  このゲームは教育目的のシミュレーションです
+
+⚠️  実際のハッキング行為は違法です
+    - 不正アクセス禁止法
+    - コンピュータ詐欺法
+    - その他の法律に違反します
+
+⚠️  ゲーム内で学んだ知識は
+    責任を持ってのみ使用してください
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔟 サポート & ドキュメント
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 詳細ガイド:        README.md
+📖 セットアップ:      SETUP_GUIDE.md
+📖 インストール:      INSTALL.txt
+📖 クイックスタート:  START_HERE.txt
+🧪 動作確認:          python test_setup.py
+
+🔗 公式ドキュメント:
+   Django:  https://docs.djangoproject.com/
+   Python:  https://docs.python.org/ja/
+   MDN:     https://developer.mozilla.org/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎉 楽しいゲームプレイを！
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+製作者: kazuma masuda
+バージョン: 1.0
+最終更新: 2026年1月17日
+
+🚀 ゲーム開始: python start_game.py

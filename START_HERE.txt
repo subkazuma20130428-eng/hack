@@ -1,0 +1,136 @@
+🎮 ハッカータイパー - Hacker Typer Game
+========================================
+
+✨ 本物のハッカー風ターミナルシミュレーターゲーム
+
+📋 QUICK START
+==============
+
+【Windows】
+1. RUN_GAME.bat をダブルクリック
+2. ブラウザで http://localhost:8000 にアクセス
+
+【Linux / macOS】
+1. ターミナルで以下を実行:
+   bash RUN_GAME.sh
+2. ブラウザで http://localhost:8000 にアクセス
+
+【Python実行（全OS対応）】
+1. ターミナル/コマンドプロンプトで以下を実行:
+   python start_game.py
+2. ブラウザで http://localhost:8000 にアクセス
+
+🎯 テストアカウント
+================
+
+ユーザー名: masumc
+パスワード: kazuma20130412@@
+
+🎮 ゲーム機能
+============
+
+✅ 330+ のコマンド実装
+✅ Tab キーによる補完機能
+✅ スコアシステム
+✅ マルチプレイヤー対戦
+✅ グローバルチャット
+✅ アカウント管理
+✅ コマンド履歴
+
+📚 利用可能なコマンド
+====================
+
+基本コマンド:
+- ls, cat, pwd, cd, mkdir, rm, cp, mv
+- chmod, chown, useradd, userdel
+
+ネットワーク:
+- ping, nmap, netstat, ifconfig, ssh, ftp, curl
+- tracert, dig, whois
+
+ハッキングツール:
+- sqlmap, hydra, aircrack-ng, metasploit
+- john, hashcat, reverse-shell
+
+開発ツール:
+- git, gcc, python, node, docker, npm
+- npm, yarn, pip, poetry, cargo
+
+その他:
+- systemctl, service, tar, gzip, zip
+- openvpn, tor, ansible, terraform, kubernetes
+
+詳細は 'help' コマンドを実行してください！
+
+🔧 トラブルシューティング
+========================
+
+Q: ポート 8000 が既に使用されている
+A: python manage.py runserver 0.0.0.0:9000
+
+Q: "command not found: python"
+A: "python3" を使用してください
+
+Q: ゲーム画面が表示されない
+A: http://localhost:8000/ にアクセスしてください
+
+Q: スタイルが崩れている
+A: python manage.py collectstatic --noinput
+
+Q: データベースをリセットしたい
+A: db.sqlite3 を削除して再度起動
+
+📁 ファイル構成
+==============
+
+hack/
+├── game/                    ゲームアプリケーション
+│   ├── templates/game/      HTML テンプレート
+│   ├── static/game/         CSS, JavaScript
+│   ├── views.py             API エンドポイント
+│   └── urls.py              URL ルーティング
+├── hacker_typer/            Django 設定
+├── manage.py                Django コマンド
+├── db.sqlite3               データベース
+├── RUN_GAME.bat             Windows 起動
+├── RUN_GAME.sh              Linux/Mac 起動
+├── start_game.py            Python 起動
+└── README.md                詳細ドキュメント
+
+🌐 アクセス方法
+==============
+
+ゲーム:         http://localhost:8000
+管理画面:       http://localhost:8000/admin
+チャット:       ゲーム内チャットタブ
+バトル:         "戦う"ボタンをクリック
+
+🔐 セキュリティ
+===============
+
+⚠️  このゲームは教育目的のシミュレーションです
+⚠️  実際のハッキング行為は違法です
+⚠️  ゲーム内の知識は責任を持って使用してください
+
+📚 詳細ドキュメント
+===================
+
+README.md または SETUP_GUIDE.md を参照してください
+
+🐛 バグ報告
+===========
+
+問題を見つけた場合は、以下の情報を含めて報告してください：
+- エラーメッセージ
+- 実行していたコマンド
+- 使用しているOS
+- Python のバージョン
+
+📞 サポート
+==========
+
+Django:  https://docs.djangoproject.com/
+Python:  https://docs.python.org/ja/
+MDN:     https://developer.mozilla.org/
+
+🎉 楽しくゲームをお楽しみください！

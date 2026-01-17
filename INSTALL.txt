@@ -1,0 +1,131 @@
+【インストール方法】
+
+【方法1】バッチファイル実行（推奨 - Windows）
+========================================
+1. RUN_GAME.bat をダブルクリック
+2. 自動的にセットアップが始まります
+3. http://localhost:8000 にアクセス
+
+【方法2】シェルスクリプト実行（Linux/macOS）
+========================================
+1. ターミナルを開く
+2. 以下を実行:
+   bash RUN_GAME.sh
+3. http://localhost:8000 にアクセス
+
+【方法3】Python スクリプト実行（全OS対応）
+========================================
+1. コマンドプロンプト/ターミナルを開く
+2. 以下を実行:
+   python start_game.py
+3. http://localhost:8000 にアクセス
+
+【方法4】手動セットアップ（カスタマイズ向け）
+========================================
+1. Python 3.8+ をインストール
+
+2. プロジェクトディレクトリに移動:
+   cd "パス/ハッカータイパー/hack"
+
+3. 仮想環境を作成:
+   python -m venv venv
+
+4. 仮想環境を有効化:
+   【Windows】
+   venv\Scripts\activate.bat
+   
+   【Linux/macOS】
+   source venv/bin/activate
+
+5. Django をインストール:
+   pip install -r requirements.txt
+
+6. データベースを初期化:
+   python manage.py migrate
+
+7. 静的ファイルを収集:
+   python manage.py collectstatic --noinput
+
+8. サーバーを起動:
+   python manage.py runserver
+
+9. http://localhost:8000 にアクセス
+
+【テストアカウント】
+================
+
+デフォルトで以下のアカウントが登録済みです：
+
+ユーザー名: masumc
+パスワード: kazuma20130412@@
+
+新規アカウントを作成することもできます。
+
+【ゲーム開始】
+===========
+
+1. http://localhost:8000 にアクセス
+2. 「ハッキング開始」をクリック
+3. ログインまたは新規登録
+4. ターミナルでコマンドを実行
+5. 対戦したい場合は「戦う」をクリック
+
+【コマンド一例】
+=============
+
+help          - すべてのコマンドを表示
+ls            - ディレクトリ一覧
+cat secret.txt - ファイルを表示
+pwd           - 現在のディレクトリ
+cd /home      - ディレクトリ移動
+hack          - ハッキング実行
+ping google.com - Ping送信
+ssh user@host  - SSH接続
+
+【トラブルシューティング】
+=======================
+
+Q: "Python not found"
+A: Python がインストールされていません
+   python.org から Python 3.8+ をインストールしてください
+
+Q: "Module not found django"
+A: Django がインストールされていません
+   pip install django を実行してください
+
+Q: ポート 8000 が使用中
+A: 別のポートで起動:
+   python manage.py runserver 0.0.0.0:9000
+
+Q: データベースエラー
+A: db.sqlite3 を削除して再度起動:
+   rm db.sqlite3
+   python manage.py migrate
+
+Q: スタイルが崩れている
+A: 静的ファイルを再収集:
+   python manage.py collectstatic --noinput
+
+Q: ゲームにアクセスできない
+A: サーバーが起動しているか確認:
+   http://localhost:8000 でテスト
+
+【ポート設定】
+===========
+
+デフォルト: 8000
+別のポートを使用: python manage.py runserver 0.0.0.0:ポート番号
+
+【セキュリティに関する注意】
+=======================
+
+⚠️  このゲームは教育目的です
+⚠️  実際のハッキング行為は違法です
+⚠️  責任を持ってプレイしてください
+
+【サポート】
+==========
+
+詳細は README.md または SETUP_GUIDE.md を参照してください
+
+【楽しいゲームプレイを！】
