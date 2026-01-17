@@ -603,6 +603,7 @@ body {
     word-wrap: break-word;
     white-space: pre-wrap;
     scroll-behavior: smooth;
+    min-height: 0;
 }
 
 .terminal-output::-webkit-scrollbar {

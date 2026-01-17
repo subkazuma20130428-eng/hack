@@ -1760,7 +1760,7 @@ hack web
                 this.score += Math.floor(Math.random() * 15) + 10;
         }
         
-        // コマンド実行後にスクロール（複数回確認）
+        // コマンド実行後にスクロール（複数回）
         setTimeout(() => {
             this.scrollToBottom();
         }, 100);
@@ -1771,11 +1771,7 @@ hack web
         
         setTimeout(() => {
             this.scrollToBottom();
-        }, 600);
-        
-        setTimeout(() => {
-            this.scrollToBottom();
-        }, 1000);
+        }, 500);
         
         // 入力フィールドクリア
         this.commandInput.value = '';
@@ -3390,28 +3386,28 @@ hack web
                 
                 this.terminalOutput.appendChild(outputEl);
                 
-                // 各行追加時にもスクロール
+                // 各行追加時にスクロール（複数タイミング）
                 this.scrollToBottom();
+                setTimeout(() => {
+                    this.scrollToBottom();
+                }, 20);
+                setTimeout(() => {
+                    this.scrollToBottom();
+                }, 50);
                 
                 // 最後の行の処理が終わったら追加のスクロール
                 if (index === lines.length - 1) {
                     setTimeout(() => {
                         this.scrollToBottom();
-                    }, 50);
+                    }, 200);
                     setTimeout(() => {
                         this.scrollToBottom();
-                    }, 150);
+                    }, 400);
                     setTimeout(() => {
                         this.scrollToBottom();
-                    }, 300);
-                    setTimeout(() => {
-                        this.scrollToBottom();
-                    }, 500);
-                    setTimeout(() => {
-                        this.scrollToBottom();
-                    }, 1000);
+                    }, 700);
                 }
-            }, index * 5); // 5msごとに行を表示
+            }, index * 300); // 300msごとに行を表示
         });
     }
     
@@ -3422,51 +3418,36 @@ hack web
     }
     
     scrollToBottom() {
-        // 最後の要素を取得
-        const lastLine = this.terminalOutput.lastElementChild;
-        
-        if (lastLine) {
-            // scrollIntoView を使用して確実にスクロール
-            lastLine.scrollIntoView({behavior: 'smooth', block: 'end'});
-        }
-        
-        // 念のため複数回 scrollTop でも確認
-        this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-        
-        setTimeout(() => {
-            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        try {
+            // 最後の要素を取得
+            const lastLine = this.terminalOutput.lastElementChild;
+            
             if (lastLine) {
-                lastLine.scrollIntoView({behavior: 'auto', block: 'end'});
+                // scrollIntoView を使用して確実にスクロール
+                lastLine.scrollIntoView({behavior: 'smooth', block: 'end'});
             }
-        }, 10);
-        
-        setTimeout(() => {
+            
+            // 念のため複数回 scrollTop でも確認
             this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-        }, 30);
-        
-        setTimeout(() => {
-            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-        }, 50);
-        
-        setTimeout(() => {
-            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-        }, 100);
-        
-        setTimeout(() => {
-            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-        }, 150);
-        
-        setTimeout(() => {
-            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-        }, 300);
-        
-        setTimeout(() => {
-            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-        }, 500);
-        
-        setTimeout(() => {
-            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
-        }, 1000);
+            
+            setTimeout(() => {
+                this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+            }, 10);
+            
+            setTimeout(() => {
+                this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+            }, 30);
+            
+            setTimeout(() => {
+                this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+            }, 50);
+            
+            setTimeout(() => {
+                this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+            }, 100);
+        } catch (e) {
+            // ignore
+        }
     }
     
     escapeHtml(text) {
@@ -5277,7 +5258,7 @@ hack web
             return;
         }
         
-        this.printOutput(`\n╔════════════════════════════════════════════╗\n`);
+        this.printOutput(`╔════════════════════════════════════════════╗\n`);
         this.printOutput(`║        AUTO HACK PROTOCOL v2.1             ║\n`);
         this.printOutput(`╚════════════════════════════════════════════╝\n\n`);
         this.printOutput(`[*] ターゲット: ${target}\n`);
@@ -5323,6 +5304,7 @@ hack web
         this.printOutput(`  [+] データベースパスワード: db_pass_123456\n`);
         this.printOutput(`  [+] APIトークン: sk_live_abc123xyz789\n`);
         this.printOutput(`  [+] スコア +50\n\n`);
+        this.printOutput(`  [!] 合計4個の認証情報が抽出されました\n`);
         this.score += 50;
         
         // 完了報告
@@ -5332,9 +5314,19 @@ hack web
         this.printOutput(`[+] システム完全支配: 成功\n`);
         this.printOutput(`[+] 獲得スコア: 170ポイント\n`);
         this.printOutput(`[+] セッションID: ${Math.random().toString(36).substring(2, 15)}\n`);
-        this.printOutput(`[!] すべての証跡を削除中...\n\n`);
+        this.printOutput(`[!] すべての証跡を削除中...\n`);
+        this.printOutput(`[!] 削除完了\n\n`);
+        this.printOutput(`[!] データーを複製し、PCにコピーしました。\n`);
+        this.printOutput(`[!] hack target ok${target}\n\n`);
         
-        this.printOutput(`root@${target}:~# \n`);
+        // プロンプト表示をDOMで更新
+        setTimeout(() => {
+            const promptEl = document.createElement('div');
+            promptEl.className = 'output-line prompt-line';
+            promptEl.innerHTML = `<span class="prompt-text">root@${target}:~#</span> `;
+            this.terminalOutput.appendChild(promptEl);
+            this.scrollToBottom();
+        }, 1000);
     }
 
     cmdRandomOutput(command) {
