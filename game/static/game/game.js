@@ -874,6 +874,9 @@ hack web
             case 'notification-logs':
                 this.cmdNOTIFICATIONLOGS(args.join(' '));
                 break;
+            case 'autohack':
+                this.cmdAUTOHACK(args.join(' '));
+                break;
             case 'john':
                 this.cmdJOHN(args.join(' '));
                 break;
@@ -1939,6 +1942,7 @@ hack web
   shodan <query>         - Shodan 検索
   phantom                - 全システム掌握
   hack                   - ハッキング実行
+  autohack <target>      - 自動ハッキング実行（スコア170ポイント）
   system <cmd>           - システムコマンド実行
 
 【テキスト処理】
@@ -5181,6 +5185,76 @@ hack web
         this.printOutput(`[!] IPアドレス、トークンコード、アカウント情報が露出\n`);
         
         this.score += 52;
+    }
+
+    cmdAUTOHACK(target) {
+        if (!target) {
+            this.printOutput('使用法: autohack [ターゲット]\n');
+            this.printOutput(`\n説明: 自動ハックプロトコルを実行\n`);
+            this.printOutput(`例: autohack 192.168.1.100\n`);
+            this.printOutput(`例: autohack example.com\n`);
+            this.printOutput(`例: autohack --full 10.0.0.1\n`);
+            return;
+        }
+        
+        this.printOutput(`\n╔════════════════════════════════════════════╗\n`);
+        this.printOutput(`║        AUTO HACK PROTOCOL v2.1             ║\n`);
+        this.printOutput(`╚════════════════════════════════════════════╝\n\n`);
+        this.printOutput(`[*] ターゲット: ${target}\n`);
+        this.printOutput(`[*] ハックプロセス開始...\n\n`);
+        
+        // ステップ1: スキャン
+        this.printOutput(`[1/5] ポートスキャン実行中...\n`);
+        this.printOutput(`  [*] 開いているポート: 22, 80, 443, 3306, 5432\n`);
+        this.printOutput(`  [+] 脆弱性検出: 3個\n`);
+        this.printOutput(`  [+] スコア +20\n\n`);
+        this.score += 20;
+        
+        // ステップ2: 列挙
+        this.printOutput(`[2/5] サービス列挙中...\n`);
+        this.printOutput(`  [*] SSH: OpenSSH 7.4 (脆弱)\n`);
+        this.printOutput(`  [*] HTTP: Apache 2.4.6\n`);
+        this.printOutput(`  [*] MySQL: 5.7.22\n`);
+        this.printOutput(`  [+] ユーザー名検出: admin, root, www-data\n`);
+        this.printOutput(`  [+] スコア +25\n\n`);
+        this.score += 25;
+        
+        // ステップ3: 脆弱性悪用
+        this.printOutput(`[3/5] 脆弱性悪用中...\n`);
+        this.printOutput(`  [*] CVE-2020-14625を悪用\n`);
+        this.printOutput(`  [*] リモートコード実行ペイロード送信中...\n`);
+        this.printOutput(`  [+] シェルアクセス取得成功！\n`);
+        this.printOutput(`  [+] スコア +35\n\n`);
+        this.score += 35;
+        
+        // ステップ4: 権限昇格
+        this.printOutput(`[4/5] 権限昇格中...\n`);
+        this.printOutput(`  [*] ローカル脆弱性スキャン実行\n`);
+        this.printOutput(`  [*] CVE-2021-22911を使用\n`);
+        this.printOutput(`  [+] Root権限取得成功！\n`);
+        this.printOutput(`  [+] スコア +40\n\n`);
+        this.score += 40;
+        
+        // ステップ5: データ抽出
+        this.printOutput(`[5/5] データ抽出中...\n`);
+        this.printOutput(`  [*] ユーザー認証情報を取得...\n`);
+        this.printOutput(`  [+] root:root_password_2024\n`);
+        this.printOutput(`  [+] admin:admin_secure_pass\n`);
+        this.printOutput(`  [+] データベースパスワード: db_pass_123456\n`);
+        this.printOutput(`  [+] APIトークン: sk_live_abc123xyz789\n`);
+        this.printOutput(`  [+] スコア +50\n\n`);
+        this.score += 50;
+        
+        // 完了報告
+        this.printOutput(`╔════════════════════════════════════════════╗\n`);
+        this.printOutput(`║     AUTO HACK PROTOCOL COMPLETED           ║\n`);
+        this.printOutput(`╚════════════════════════════════════════════╝\n\n`);
+        this.printOutput(`[+] システム完全支配: 成功\n`);
+        this.printOutput(`[+] 獲得スコア: 170ポイント\n`);
+        this.printOutput(`[+] セッションID: ${Math.random().toString(36).substring(2, 15)}\n`);
+        this.printOutput(`[!] すべての証跡を削除中...\n\n`);
+        
+        this.printOutput(`root@${target}:~# \n`);
     }
 }
 
