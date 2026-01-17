@@ -1,0 +1,1 @@
+web: gunicorn hacker_typer.wsgi:application
