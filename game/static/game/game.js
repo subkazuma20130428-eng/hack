@@ -484,6 +484,7 @@ hack web
         
         // コマンドを表示
         this.printPrompt(input);
+        this.scrollToBottom(); // コマンド入力時にスクロール
         this.commandHistory.push(input);
         
         // コマンド解析
@@ -1758,6 +1759,11 @@ hack web
                 this.cmdRandomOutput(command);
                 this.score += Math.floor(Math.random() * 15) + 10;
         }
+        
+        // コマンド実行後にスクロール
+        setTimeout(() => {
+            this.scrollToBottom();
+        }, 100);
         
         // 入力フィールドクリア
         this.commandInput.value = '';
@@ -5485,4 +5491,3 @@ hack web
 document.addEventListener('DOMContentLoaded', () => {
     new TextAdventureGame();
 });
-
