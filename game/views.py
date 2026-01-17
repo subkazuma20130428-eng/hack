@@ -12,6 +12,10 @@ accounts = {
     }
 }  # アカウント管理用
 
+# バトル機能用のメモリ
+waiting_players = []  # マッチング待機中のプレイヤー
+active_battles = {}   # 進行中のバトル
+
 # ハッキング用のサンプルコマンド
 HACKING_COMMANDS = [
     "nmap -sV 192.168.1.1",

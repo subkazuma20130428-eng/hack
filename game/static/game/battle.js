@@ -35,7 +35,10 @@ class BattleArena {
         this.battleActive = true;
         this.battleId = null;
         this.lastFetchedOpponentCommands = 0;
-        this.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // CSRFトークン取得
+        const csrfElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        this.csrfToken = csrfElement ? csrfElement.value : '';
         
         // プレイヤー情報
         this.playerName.textContent = playerName;
