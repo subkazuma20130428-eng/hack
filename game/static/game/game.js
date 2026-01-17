@@ -31,11 +31,6 @@ class TextAdventureGame {
         this.tabBtns = document.querySelectorAll('.tab-btn');
         this.tabContents = document.querySelectorAll('.tab-content');
         this.profilePanel = document.querySelector('.profile-panel');
-        this.battleBtn = document.getElementById('battleBtn');
-        this.gameContainer = document.getElementById('gameContainer');
-        this.opponentOutput = document.getElementById('opponentOutput');
-        
-        // チャット要素
         this.chatInput = document.getElementById('chatInput');
         this.chatMessages = document.getElementById('chatMessages');
         this.sendChatBtn = document.getElementById('sendChatBtn');
@@ -44,7 +39,6 @@ class TextAdventureGame {
         this.currentPath = '/home';
         this.commandHistory = [];
         this.gameStarted = false;
-        this.inBattle = false;
         this.score = 0;
         this.currentPlayerName = 'Hacker' + Math.floor(Math.random() * 1000);
         this.lastChatTime = 0;
@@ -156,17 +150,6 @@ class TextAdventureGame {
             if (e.key === 'Enter') {
                 this.sendChatMessage();
             }
-        });
-        
-        // 戦うボタン
-        this.battleBtn.addEventListener('click', () => {
-            if (!this.currentPlayerName) {
-                alert('先にログインしてください');
-                return;
-            }
-            // プレイヤー名をlocalStorageに保存
-            localStorage.setItem('playerName', this.currentPlayerName);
-            window.location.href = '/battle/';
         });
         
         // チャットメッセージを定期的に取得
