@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>11100011 10000011 10001111 11100011 10000011 10000011 11100011 10000010 10101011 11100011 10000011 10111100 11100011 10000010 10111111 11100011 10000010 10100100 11100011 10000011 10010001 11100011 10000011 10111100</title>
-    <link rel="stylesheet" href="{% static 'game/style.css' %}">
+    <link rel="stylesheet" href="{% static 'game/style.css' %}?v=7">
 </head>
 <body>
     {% csrf_token %}
@@ -23,7 +26,7 @@
         <!-- ゲーム画面 -->
         <div class="terminal-body">
             <!-- プレイヤー登録画面 -->
-            <div id="loginScreen" class="screen">
+            <div id="loginScreen" class="screen" style="display:none;">
                 <div class="login-content">
                     <div class="ascii-title">web hack</div>
                     <div class="login-form">
@@ -33,7 +36,7 @@
             </div>
 
             <!-- ゲーム画面 -->
-            <div id="gameScreen" class="screen active">
+            <div id="gameScreen" class="screen active" style="display:block;">
                 <div class="game-layout">
                     <!-- 左側: ゲーム画面 -->
                     <div class="game-main">
@@ -98,43 +101,44 @@
                             </div>
                         </div>
 
-                        <!-- ゲーム画面 -->
-                        <div class="game-screen">
-                            <div class="game-header">
-                                <div class="status-line">
-                                    <span id="currentUser">root@hacker</span>:<span id="currentLocation">~</span>#
+                        <!-- ゲーム画面とチャットを並べるコンテナ -->
+                        <div class="game-screen-container">
+                            <!-- ゲーム画面 -->
+                            <div class="game-screen">
+                                <div class="game-header">
+                                    <div class="status-line">
+                                        <span id="currentUser">root@hacker</span>:<span id="currentLocation">~</span>#
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="game-content">
-                                <div id="terminalOutput" class="terminal-output"></div>
+                                <div class="game-content">
+                                    <div id="terminalOutput" class="terminal-output"></div>
 
-                                <div class="input-section">
-                                    <div class="input-display">
-                                        <span class="prompt" id="promptText">root@hacker:~$</span>
-                                        <input 
-                                            type="text" 
-                                            id="commandInput" 
-                                            class="command-input" 
-                                            autocomplete="off"
-                                            spellcheck="false"
-                                            placeholder="コマンドを入力してください"
-                                        >
-                                        <span class="cursor">|</span>
+                                    <div class="input-section">
+                                        <div class="input-display">
+                                            <span class="prompt" id="promptText">root@hacker:~$</span>
+                                            <input 
+                                                type="text" 
+                                                id="commandInput" 
+                                                class="command-input" 
+                                                autocomplete="off"
+                                                spellcheck="false"
+                                                placeholder="コマンドを入力してください"
+                                            >
+                                            <span class="cursor">|</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- チャットパネル -->
-                    <div class="chat-section">
-                        <button id="battleBtn" class="battle-btn">⚔️ 戦う</button>
-                        <div class="chat-panel">
-                            <div class="chat-header">💬 チャット</div>
-                            <div id="chatMessages" class="chat-messages"></div>
-                            <div class="chat-input-section">
-                                <input 
+                            <!-- チャットパネル -->
+                            <div class="chat-section">
+                                <button id="battleBtn" class="battle-btn">⚔️ 戦う</button>
+                                <div class="chat-panel">
+                                    <div class="chat-header">💬 チャット</div>
+                                    <div id="chatMessages" class="chat-messages"></div>
+                                    <div class="chat-input-section">
+                                        <input 
                                     type="text" 
                                     id="chatInput" 
                                     class="chat-input" 
@@ -149,6 +153,6 @@
         </div>
     </div>
 
-    <script src="{% static 'game/game.js' %}?v=2"></script>
+    <script src="{% static 'game/game.js' %}?v=7"></script>
 </body>
 </html>

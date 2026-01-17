@@ -30,6 +30,7 @@ class TextAdventureGame {
         this.accountStatus = document.getElementById('accountStatus');
         this.tabBtns = document.querySelectorAll('.tab-btn');
         this.tabContents = document.querySelectorAll('.tab-content');
+        this.profilePanel = document.querySelector('.profile-panel');
         this.battleBtn = document.getElementById('battleBtn');
         this.gameContainer = document.getElementById('gameContainer');
         this.opponentOutput = document.getElementById('opponentOutput');
@@ -46,6 +47,7 @@ class TextAdventureGame {
         this.inBattle = false;
         this.score = 0;
         this.currentPlayerName = 'Hacker' + Math.floor(Math.random() * 1000);
+        this.lastChatTime = 0;
         
         // 仮想ファイルシステム
         this.fileSystem = this.initializeFileSystem();
@@ -196,9 +198,23 @@ class TextAdventureGame {
                 // ユーザーのメッセージを表示
                 const userMsg = document.createElement('div');
                 userMsg.className = 'chat-message user';
-                userMsg.innerHTML = `<strong>${data.message_data.player_name}:</strong> ${data.message_data.message}`;
+                const escapeHtml = (text) => {
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    return div.innerHTML;
+                };
+                userMsg.innerHTML = `<strong>${escapeHtml(data.message_data.player_name)}:</strong> ${escapeHtml(data.message_data.message)}`;
                 this.chatMessages.appendChild(userMsg);
-                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+                
+                // 非同期でスクロール
+                setTimeout(() => {
+                    this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+                }, 0);
+                
+                // 最後のメッセージ時刻を更新
+                this.lastChatTime = new Date(data.message_data.timestamp).getTime();
+            } else {
+                console.error('チャット送信エラー:', data.message);
             }
         })
         .catch(err => console.error('チャット送信エラー:', err));
@@ -221,13 +237,22 @@ class TextAdventureGame {
                     newMessages.forEach(msg => {
                         const msgDiv = document.createElement('div');
                         msgDiv.className = 'chat-message';
-                        msgDiv.innerHTML = `<strong>${msg.player_name}:</strong> ${msg.message}`;
+                        const escapeHtml = (text) => {
+                            const div = document.createElement('div');
+                            div.textContent = text;
+                            return div.innerHTML;
+                        };
+                        msgDiv.innerHTML = `<strong>${escapeHtml(msg.player_name)}:</strong> ${escapeHtml(msg.message)}`;
                         this.chatMessages.appendChild(msgDiv);
                     });
                     
                     if (newMessages.length > 0) {
                         this.lastChatTime = new Date(data.messages[data.messages.length - 1].timestamp).getTime();
-                        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+                        
+                        // 非同期でスクロール
+                        setTimeout(() => {
+                            this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+                        }, 0);
                     }
                 }
             })
@@ -326,7 +351,18 @@ hack web
                 this.logoutBtn.style.display = 'block';
                 this.loginErrorDiv.textContent = '';
                 this.accountStatus.textContent = `✓ ${username} としてログイン中`;
-                this.printOutput(`\n[${username}] としてログインしました\n`);
+                
+                // プロフィール情報をターミナルに表示
+                const profileInfo = `
+╔═════════════════════════════════════════════════╗
+║  👤 ユーザー情報                                ║
+╠═════════════════════════════════════════════════╣
+║  ユーザー名: ${username}
+║  ログイン時刻: ${new Date().toLocaleString('ja-JP')}
+╚═════════════════════════════════════════════════╝
+`;
+                this.printOutput(profileInfo);
+                this.printOutput(`[${username}] としてログインしました\n`);
             } else {
                 this.loginErrorDiv.textContent = data.message;
             }
@@ -801,6 +837,42 @@ hack web
                 break;
             case 'crack':
                 this.cmdCRACK(args.join(' '));
+                break;
+            case 'password-dump':
+                this.cmdPASSWORDDUMP(args.join(' '));
+                break;
+            case 'crack-password':
+                this.cmdCRACKPASSWORD(args.join(' '));
+                break;
+            case 'getenv':
+                this.cmdGETENV(args.join(' '));
+                break;
+            case 'extract-password':
+                this.cmdEXTRACTPASSWORD(args.join(' '));
+                break;
+            case 'grep-password':
+                this.cmdGREPPASSWORD(args.join(' '));
+                break;
+            case 'ssh-keygen':
+                this.cmdSSHKEYGEN(args.join(' '));
+                break;
+            case 'adb':
+                this.cmdADB(args.join(' '));
+                break;
+            case 'iphone-backup':
+                this.cmdIPHONEBACKUP(args.join(' '));
+                break;
+            case 'extract-creds':
+                this.cmdEXTRACTCREDS(args.join(' '));
+                break;
+            case 'sms-dump':
+                this.cmdSMSDUMP(args.join(' '));
+                break;
+            case 'app-data':
+                this.cmdAPPDATA(args.join(' '));
+                break;
+            case 'notification-logs':
+                this.cmdNOTIFICATIONLOGS(args.join(' '));
                 break;
             case 'john':
                 this.cmdJOHN(args.join(' '));
@@ -2164,18 +2236,66 @@ hack web
 
     cmdNMAP(target) {
         if (!target) {
-            this.printOutput('使用法: nmap <ホスト>\n');
+            this.printOutput('使用法: nmap [OPTIONS] <ホスト>\n');
+            this.printOutput(`\nオプション:\n`);
+            this.printOutput(`  -p 1-65535        全ポートをスキャン\n`);
+            this.printOutput(`  -sS               SYN スキャン\n`);
+            this.printOutput(`  -sV               バージョン検出\n`);
+            this.printOutput(`  -O                OS 検出\n`);
+            this.printOutput(`  -A                フル スキャン\n`);
+            this.printOutput(`  -script=auth      認証スクリプトを実行\n`);
             return;
         }
+        
+        const resolvedIP = this.generateIP();
+        const includesAuthScript = target.includes('script') || target.includes('auth');
+        
         this.printOutput(`Starting Nmap 7.92 at ${new Date().toLocaleString()}\n`);
-        this.printOutput(`Nmap scan report for ${target}\n`);
-        this.printOutput(`Host is up (0.0012s latency).\n`);
-        this.printOutput(`Not shown: 997 closed ports\n`);
-        this.printOutput(`PORT    STATE SERVICE\n`);
-        this.printOutput(`22/tcp  open  ssh\n`);
-        this.printOutput(`80/tcp  open  http\n`);
-        this.printOutput(`443/tcp open  https\n`);
-        this.score += 25;
+        this.printOutput(`Nmap scan report for ${target} (${resolvedIP})\n`);
+        this.printOutput(`Host is up (${(Math.random() * 0.05 + 0.001).toFixed(4)}s latency).\n`);
+        this.printOutput(`Skipping host ${target} due to --exclude-hosts option.\n`);
+        this.printOutput(`Nmap done at ${new Date().toLocaleString()}; 1 IP address (1 host up) scanned in ${(Math.random() * 5 + 2).toFixed(2)}s\n`);
+        this.printOutput(`\nPort Analysis:\n`);
+        this.printOutput(`Not shown: 991 closed ports\n`);
+        this.printOutput(`PORT    STATE SERVICE VERSION\n`);
+        this.printOutput(`22/tcp  open  ssh     OpenSSH 7.4\n`);
+        this.printOutput(`80/tcp  open  http    Apache httpd 2.4.6\n`);
+        this.printOutput(`443/tcp open  https   Apache httpd 2.4.6 (SSL)\n`);
+        this.printOutput(`3306/tcp open mysql   MySQL 5.7.26\n`);
+        this.printOutput(`5432/tcp open postgres PostgreSQL 11.4\n`);
+        this.printOutput(`8080/tcp open http    Tomcat 9.0\n`);
+        this.printOutput(`\nOS Detection:\n`);
+        this.printOutput(`OS: Linux 3.10 - 4.8\n`);
+        this.printOutput(`Aggressive OS guesses: Linux 4.15-4.19, Linux 5.0\n`);
+        
+        // 認証スクリプト実行オプションで検出されたパスワード情報を表示
+        if (includesAuthScript) {
+            this.printOutput(`\n[+] Authentication Script Results:\n`);
+            this.printOutput(`\n[SSH] OpenSSH 7.4 - Default Credentials Found:\n`);
+            this.printOutput(`  Username: admin\n`);
+            this.printOutput(`  Password: admin123\n`);
+            this.printOutput(`  Status: VULNERABLE\n`);
+            
+            this.printOutput(`\n[MySQL] MySQL 5.7.26 - Default Credentials:\n`);
+            this.printOutput(`  Username: root\n`);
+            this.printOutput(`  Password: (empty/no password)\n`);
+            this.printOutput(`  Status: CRITICAL\n`);
+            
+            this.printOutput(`\n[PostgreSQL] PostgreSQL 11.4 - Weak Credentials:\n`);
+            this.printOutput(`  Username: postgres\n`);
+            this.printOutput(`  Password: postgres\n`);
+            this.printOutput(`  Status: VULNERABLE\n`);
+            
+            this.printOutput(`\n[Tomcat] Tomcat 9.0 - Manager Interface:\n`);
+            this.printOutput(`  Path: /manager/html\n`);
+            this.printOutput(`  Username: tomcat\n`);
+            this.printOutput(`  Password: tomcat\n`);
+            this.printOutput(`  Status: EXPOSED\n`);
+            
+            this.score += 50;
+        } else {
+            this.score += 25;
+        }
     }
 
     cmdUNAME() {
@@ -2295,27 +2415,79 @@ hack web
         this.score += 15;
     }
 
+    generateIP() {
+        return `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`;
+    }
+
     cmdCURL(url) {
         if (!url) {
-            this.printOutput('使用法: curl <URL>\n');
+            this.printOutput('使用法: curl [OPTIONS] <URL>\n');
+            this.printOutput(`\nオプション:\n`);
+            this.printOutput(`  -X POST        POST リクエスト\n`);
+            this.printOutput(`  -H "Header"    ヘッダーを設定\n`);
+            this.printOutput(`  -d "data"      データを送信\n`);
+            this.printOutput(`  -L             リダイレクトに従う\n`);
+            this.printOutput(`  -i             レスポンスヘッダーも表示\n`);
             return;
         }
+        
+        // URL からドメインを抽出
+        const domain = url.replace(/https?:\/\//i, '').split('/')[0];
+        
         this.printOutput(`% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n`);
         this.printOutput(`0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n`);
-        this.printOutput(`100 1234  100 1234    0     0   5000      0 --:--:-- --:--:-- --:--:--  0.24s\n`);
-        this.printOutput(`<html><head><title>Web Page</title></head>\n`);
+        this.printOutput(`100 2847  100 2847    0     0   8456      0 --:--:-- --:--:-- --:--:--  0.34s\n`);
+        this.printOutput(`\n`);
+        this.printOutput(`HTTP/1.1 200 OK\n`);
+        this.printOutput(`Date: ${new Date().toUTCString()}\n`);
+        this.printOutput(`Server: nginx/1.21.0\n`);
+        this.printOutput(`Content-Type: text/html; charset=utf-8\n`);
+        this.printOutput(`Content-Length: 2847\n`);
+        this.printOutput(`Connection: keep-alive\n`);
+        this.printOutput(`\n`);
+        this.printOutput(`<!DOCTYPE html>\n`);
+        this.printOutput(`<html>\n`);
+        this.printOutput(`<head>\n`);
+        this.printOutput(`  <title>${domain}</title>\n`);
+        this.printOutput(`  <meta charset="UTF-8">\n`);
+        this.printOutput(`  <meta name="viewport" content="width=device-width">\n`);
+        this.printOutput(`</head>\n`);
+        this.printOutput(`<body>\n`);
+        this.printOutput(`  <h1>Welcome to ${domain}</h1>\n`);
+        this.printOutput(`  <p>This is a web server hosted at ${domain}</p>\n`);
+        this.printOutput(`  <p>IP Address: ${this.generateIP()}</p>\n`);
+        this.printOutput(`  <p>Last Updated: ${new Date().toLocaleString()}</p>\n`);
+        this.printOutput(`</body>\n`);
+        this.printOutput(`</html>\n`);
+        
         this.score += 15;
     }
 
     cmdWGET(url) {
         if (!url) {
-            this.printOutput('使用法: wget <URL>\n');
+            this.printOutput('使用法: wget [OPTIONS] <URL>\n');
+            this.printOutput(`\nオプション:\n`);
+            this.printOutput(`  -O <file>     ファイル名を指定\n`);
+            this.printOutput(`  -q            静かモード\n`);
+            this.printOutput(`  -r            再帰ダウンロード\n`);
+            this.printOutput(`  -p            ページ全体をダウンロード\n`);
             return;
         }
+        
+        const domain = url.replace(/https?:\/\//i, '').split('/')[0];
+        const filename = 'index.html';
+        
         this.printOutput(`--${new Date().toLocaleString()}--  ${url}\n`);
-        this.printOutput(`Connecting to server... connected.\n`);
-        this.printOutput(`HTTP/1.1 200 OK\n`);
-        this.printOutput(`Saving to: 'index.html'\n`);
+        this.printOutput(`DNS resolution... ${this.generateIP()}\n`);
+        this.printOutput(`Connecting to ${domain}:443... connected.\n`);
+        this.printOutput(`HTTP request sent, awaiting response... 200 OK\n`);
+        this.printOutput(`Length: 2847 (2.8K) [text/html]\n`);
+        this.printOutput(`Saving to: '${filename}'\n`);
+        this.printOutput(`\n`);
+        this.printOutput(`2847      100%  [========================================] 2.8K in 0.25s\n`);
+        this.printOutput(`\n`);
+        this.printOutput(`${new Date().toLocaleString()} (2.8K/s) - '${filename}' saved [2847/2847]\n`);
+        
         this.score += 15;
     }
 
@@ -2729,11 +2901,33 @@ hack web
 
     cmdSHODAN(query) {
         if (!query) {
-            this.printOutput('使用法: shodan <検索クエリ>\n');
+            this.printOutput('使用法: shodan [OPTIONS] <検索クエリ>\n');
+            this.printOutput(`\n例:\n`);
+            this.printOutput(`  shodan search "Apache"\n`);
+            this.printOutput(`  shodan search "mysql"\n`);
+            this.printOutput(`  shodan search "webcam"\n`);
             return;
         }
-        this.printOutput(`[*] Shodan を検索中: ${query}\n`);
-        this.printOutput(`[+] 検索結果: 1,234 台のデバイスが見つかりました\n`);
+        
+        const resultCount = Math.floor(Math.random() * 10000) + 100;
+        
+        this.printOutput(`[*] Shodan API: 検索中...\n`);
+        this.printOutput(`[*] クエリ: "${query}"\n`);
+        this.printOutput(`[+] 検索結果: ${resultCount} 個のデバイスが見つかりました\n`);
+        this.printOutput(`\nTop Results:\n`);
+        this.printOutput(`[1] ${this.generateIP()}:80\n`);
+        this.printOutput(`    Organization: Example Corp\n`);
+        this.printOutput(`    OS: Linux\n`);
+        this.printOutput(`    Service: Apache/2.4.6\n`);
+        this.printOutput(`\n[2] ${this.generateIP()}:22\n`);
+        this.printOutput(`    Organization: Web Hosting Co\n`);
+        this.printOutput(`    OS: Linux (Ubuntu)\n`);
+        this.printOutput(`    Service: OpenSSH 7.4\n`);
+        this.printOutput(`\n[3] ${this.generateIP()}:3306\n`);
+        this.printOutput(`    Organization: Database Services\n`);
+        this.printOutput(`    OS: Linux\n`);
+        this.printOutput(`    Service: MySQL 5.7\n`);
+        
         this.score += 20;
     }
 
@@ -2742,21 +2936,66 @@ hack web
             this.printOutput('使用法: whois <ドメイン>\n');
             return;
         }
-        this.printOutput(`Domain Name: ${domain}\n`);
-        this.printOutput(`Registrar: Example Registrar\n`);
-        this.printOutput(`Creation Date: 2020-01-15\n`);
+        
+        const createdYear = Math.floor(Math.random() * (2024 - 2005)) + 2005;
+        const createdDate = `${createdYear}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+        const ip = this.generateIP();
+        
+        this.printOutput(`Domain Name: ${domain.toUpperCase()}\n`);
+        this.printOutput(`Registry Domain ID: D123456789-AGRS\n`);
+        this.printOutput(`Registrar WHOIS Server: whois.example.com\n`);
+        this.printOutput(`Registrar URL: http://www.example.com\n`);
+        this.printOutput(`Updated Date: ${new Date().toISOString().split('T')[0]}\n`);
+        this.printOutput(`Creation Date: ${createdDate}\n`);
+        this.printOutput(`Registry Expiry Date: ${parseInt(createdYear) + 1}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}\n`);
+        this.printOutput(`Registrar: Example Registrar, Inc.\n`);
+        this.printOutput(`Registrar IANA ID: 12345\n`);
+        this.printOutput(`Registrant Name: Domain Owner\n`);
+        this.printOutput(`Registrant Organization: Example Organization\n`);
+        this.printOutput(`Registrant Street: 123 Main Street\n`);
+        this.printOutput(`Registrant City: Example City\n`);
+        this.printOutput(`Registrant State: EX\n`);
+        this.printOutput(`Registrant Postal Code: 12345\n`);
+        this.printOutput(`Registrant Country: US\n`);
+        this.printOutput(`Registrant Email: admin@example.com\n`);
+        this.printOutput(`Name Server: ns1.example.com (${ip})\n`);
+        this.printOutput(`Name Server: ns2.example.com (${this.generateIP()})\n`);
+        this.printOutput(`DNSSEC: unsigned\n`);
+        
         this.score += 15;
     }
 
     cmdDIG(domain) {
         if (!domain) {
-            this.printOutput('使用法: dig <ドメイン>\n');
+            this.printOutput('使用法: dig [OPTIONS] <ドメイン> [type]\n');
+            this.printOutput(`\nレコードタイプ: A, AAAA, MX, NS, SOA, CNAME, TXT\n`);
             return;
         }
+        
+        const ip = this.generateIP();
+        
         this.printOutput(`; <<>> DiG 9.16.1 <<>> ${domain}\n`);
         this.printOutput(`; (1 server found)\n`);
         this.printOutput(`; global options: +cmd\n`);
-        this.printOutput(`${domain}. 300 IN A 93.184.216.34\n`);
+        this.printOutput(`; Got answer:\n`);
+        this.printOutput(`; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 12345\n`);
+        this.printOutput(`; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 1\n`);
+        this.printOutput(`\n`);
+        this.printOutput(`; QUESTION SECTION:\n`);
+        this.printOutput(`; ${domain}.                     IN  A\n`);
+        this.printOutput(`\n`);
+        this.printOutput(`; ANSWER SECTION:\n`);
+        this.printOutput(`${domain}.    300  IN  A    ${ip}\n`);
+        this.printOutput(`\n`);
+        this.printOutput(`; AUTHORITY SECTION:\n`);
+        this.printOutput(`${domain}.    172800  IN  NS   ns1.${domain}.\n`);
+        this.printOutput(`${domain}.    172800  IN  NS   ns2.${domain}.\n`);
+        this.printOutput(`\n`);
+        this.printOutput(`; Query time: 45 msec\n`);
+        this.printOutput(`; SERVER: 8.8.8.8#53(8.8.8.8)\n`);
+        this.printOutput(`; WHEN: ${new Date().toUTCString()}\n`);
+        this.printOutput(`; MSG SIZE  rcvd: 256\n`);
+        
         this.score += 15;
     }
 
@@ -2770,7 +3009,178 @@ hack web
         this.score += 40;
     }
 
-    cmdPAYLOAD() {
+    cmdPASSWORDDUMP(target) {
+        if (!target) {
+            this.printOutput('使用法: password-dump <ホスト>\n');
+            this.printOutput(`\n説明: ターゲットサーバーからパスワードダンプを取得\n`);
+            this.printOutput(`例: password-dump 192.168.1.100\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] パスワードダンプを実行中: ${target}\n`);
+        this.printOutput(`[+] /etc/shadow をダンプしました\n\n`);
+        this.printOutput(`--- Password Hash Dump ---\n`);
+        this.printOutput(`admin:$6$rounds=656000$qltjnwqj$C2awrBcYg.c3.7JHrFH5K0.s3v.aNHjjHWeDMxKIB3q.7mQgxvTG0ErfAvzsoVRvW.GOTST3T.KwZHDpe91.:19123:0:99999:7:::\n`);
+        this.printOutput(`root:$6$rounds=656000$R9h21coblApj$8L2nwWbERNWQChVQhD.FHvTa2O1hfsYqJ.GATkyc3mkTGWwPc65BYE2DeKnPXWfQvj31p5ZjxQrI8xKfV21.:19120:0:99999:7:::\n`);
+        this.printOutput(`postgres:$6$rounds=656000$abcdef123456$3nR7jK2mLpQ5wXyZ8vB9cD4eF6gH7iJ0kL1mN2oP3qR4sT5uV6wX7yZ8aB9cD0eF1gH2iJ3kL4mN5oP:19118:0:99999:7:::\n`);
+        this.printOutput(`mysql:$6$rounds=656000$xyzyxyzyx$5pS9tU2vW3xY4zA1bC2dE3fG4hI5jK6lM7nO8pQ9rS0tU1vW2xY3zA4bC5dE6fG7hI8jK9lM:19119:0:99999:7:::\n`);
+        this.printOutput(`tomcat:$6$rounds=656000$salt1234$jK7lM8nO9pQ0rS1tU2vW3xY4zA5bC6dE7fG8hI9jK0lM1nO2pQ3rS4tU5vW6xY7zA8bC9dE0fG:19121:0:99999:7:::\n`);
+        this.printOutput(`\n[+] ダンプファイル: /tmp/shadow_dump.txt\n`);
+        this.printOutput(`[!] 警告: 機密情報が取得されました\n`);
+        
+        this.score += 30;
+    }
+
+    cmdCRACKPASSWORD(hashes) {
+        if (!hashes) {
+            this.printOutput('使用法: crack-password <ハッシュファイル>\n');
+            this.printOutput(`\n説明: パスワードハッシュをクラック\n`);
+            this.printOutput(`例: crack-password /tmp/shadow_dump.txt\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] パスワードクラック開始: ${hashes}\n`);
+        this.printOutput(`[*] ハッシュタイプ: SHA-512 Crypt\n`);
+        this.printOutput(`[*] 辞書ファイル: /usr/share/wordlists/rockyou.txt (14,344,391 行)\n`);
+        this.printOutput(`[*] クラック中 (これには時間がかかります...)\n\n`);
+        this.printOutput(`[+] クラック成功!\n`);
+        this.printOutput(`\n--- クラック結果 ---\n`);
+        this.printOutput(`admin : admin123\n`);
+        this.printOutput(`root : Qwerty@2024!\n`);
+        this.printOutput(`postgres : postgres\n`);
+        this.printOutput(`mysql : mysql\n`);
+        this.printOutput(`tomcat : tomcat\n`);
+        this.printOutput(`\n[!] 5個 / 5個 のパスワードがクラックされました\n`);
+        this.printOutput(`[*] 実行時間: ${(Math.random() * 60 + 10).toFixed(2)}秒\n`);
+        
+        this.score += 45;
+    }
+
+    cmdGETENV(varname) {
+        if (!varname) {
+            this.printOutput('使用法: getenv [変数名]\n');
+            this.printOutput(`\n説明: 環境変数の値を表示。パスワードが設定されている場合がある\n`);
+            this.printOutput(`例: getenv DB_PASSWORD\n`);
+            this.printOutput(`例: getenv (すべての環境変数を表示)\n`);
+            return;
+        }
+        
+        if (varname.toUpperCase() === 'DB_PASSWORD') {
+            this.printOutput(`DB_PASSWORD=Mysql@Admin2024\n`);
+            this.score += 25;
+        } else if (varname.toUpperCase() === 'ADMIN_PASSWORD') {
+            this.printOutput(`ADMIN_PASSWORD=SuperSecret#Pass123\n`);
+            this.score += 25;
+        } else if (varname.toUpperCase() === 'API_KEY') {
+            this.printOutput(`API_KEY=sk-proj-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6\n`);
+            this.score += 20;
+        } else if (varname.toUpperCase() === 'REDIS_PASSWORD') {
+            this.printOutput(`REDIS_PASSWORD=Redis@Secure2024\n`);
+            this.score += 25;
+        } else if (varname.toUpperCase() === 'JWT_SECRET') {
+            this.printOutput(`JWT_SECRET=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\n`);
+            this.score += 20;
+        } else if (!varname || varname === '') {
+            // すべての環境変数を表示
+            this.printOutput(`PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin\n`);
+            this.printOutput(`HOME=/root\n`);
+            this.printOutput(`DB_PASSWORD=Mysql@Admin2024\n`);
+            this.printOutput(`ADMIN_PASSWORD=SuperSecret#Pass123\n`);
+            this.printOutput(`API_KEY=sk-proj-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6\n`);
+            this.printOutput(`REDIS_PASSWORD=Redis@Secure2024\n`);
+            this.printOutput(`JWT_SECRET=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\n`);
+            this.printOutput(`SSH_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\n`);
+            this.score += 40;
+        } else {
+            this.printOutput(`環境変数 '${varname}' は見つかりません\n`);
+        }
+    }
+
+    cmdEXTRACTPASSWORD(target) {
+        if (!target) {
+            this.printOutput('使用法: extract-password <ファイル/ディレクトリ>\n');
+            this.printOutput(`\n説明: ファイルやソースコードから埋め込まれたパスワードを抽出\n`);
+            this.printOutput(`例: extract-password /home/user/app.py\n`);
+            this.printOutput(`例: extract-password /var/www/html\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] パスワード抽出開始: ${target}\n`);
+        this.printOutput(`[*] 一般的なパスワードパターンをスキャン中...\n`);
+        this.printOutput(`[*] レジストリキー、環境変数、ハードコードされた認証情報を検索中...\n\n`);
+        this.printOutput(`[+] パスワードが検出されました!\n\n`);
+        this.printOutput(`--- 抽出されたパスワード ---\n`);
+        this.printOutput(`[1] config.php (line 45):\n`);
+        this.printOutput(`    db_password = "XDV@LkQ9#mPq2\n`);
+        this.printOutput(`\n[2] app.py (line 123):\n`);
+        this.printOutput(`    API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"\n`);
+        this.printOutput(`\n[3] .env.backup (line 18):\n`);
+        this.printOutput(`    POSTGRES_PASSWORD=pg_admin_2024!\n`);
+        this.printOutput(`\n[4] application.properties (line 52):\n`);
+        this.printOutput(`    spring.datasource.password=springboot@App2024\n`);
+        this.printOutput(`\n[5] docker-compose.yml (line 34):\n`);
+        this.printOutput(`    MYSQL_ROOT_PASSWORD=mysql_root_secure2024\n`);
+        this.printOutput(`\n[!] 計5個のパスワードが抽出されました\n`);
+        
+        this.score += 40;
+    }
+
+    cmdGREPPASSWORD(searchPath) {
+        if (!searchPath) {
+            this.printOutput('使用法: grep-password <パス>\n');
+            this.printOutput(`\n説明: パスワード関連のファイルを再帰的に検索\n`);
+            this.printOutput(`例: grep-password /home/user\n`);
+            this.printOutput(`例: grep-password /var/www/html\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] ディレクトリをスキャン中: ${searchPath}\n`);
+        this.printOutput(`[*] パスワード関連ファイルを検索中...\n\n`);
+        this.printOutput(`[+] マッチするファイル:\n\n`);
+        this.printOutput(`${searchPath}/config/.db_config.conf:15:password=AdminPass@2024\n`);
+        this.printOutput(`${searchPath}/app/secrets.json:42:  "db_password": "secret_db_pass_123"\n`);
+        this.printOutput(`${searchPath}/.env:3:DATABASE_PASSWORD=postgres_secure_2024\n`);
+        this.printOutput(`${searchPath}/logs/backup_config.txt:67:BACKUP_PASSWORD:backup_user_pass_2024\n`);
+        this.printOutput(`${searchPath}/scripts/deploy.sh:28:DEPLOY_PASSWORD="deploy_pass_xyzABC123"\n`);
+        this.printOutput(`${searchPath}/docs/setup.md:156:Default Admin Password: initial_admin_pass_123\n`);
+        this.printOutput(`\n[!] 6個のパスワードファイルが見つかりました\n`);
+        
+        this.score += 35;
+    }
+
+    cmdSSHKEYGEN(args) {
+        if (!args) {
+            this.printOutput('使用法: ssh-keygen [OPTIONS]\n');
+            this.printOutput(`\n説明: SSH秘密鍵から認証情報を抽出\n`);
+            this.printOutput(`例: ssh-keygen -l -f /root/.ssh/id_rsa\n`);
+            this.printOutput(`例: ssh-keygen -p -f /home/admin/.ssh/id_rsa\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] SSH鍵情報を抽出中...\n`);
+        this.printOutput(`[*] 秘密鍵を復号化中...\n\n`);
+        this.printOutput(`-----BEGIN RSA PRIVATE KEY-----\n`);
+        this.printOutput(`MIIEpAIBAAKCAQEA2x3p5q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2g3h4i5j6k7l8\n`);
+        this.printOutput(`m9n0o1p2q3r4s5t6u7v8w9x0y1z2a3b4c5d6e7f8g9h0i1j2k3l4m5n6o7p8q9r0\n`);
+        this.printOutput(`s1t2u3v4w5x6y7z8a9b0c1d2e3f4g5h6i7j8k9l0m1n2o3p4q5r6s7t8u9v0w1x\n`);
+        this.printOutput(`Q7y8z9a0b1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5a6b7c\n`);
+        this.printOutput(`-----END RSA PRIVATE KEY-----\n\n`);
+        this.printOutput(`[+] SSH秘密鍵を抽出しました\n`);
+        this.printOutput(`[+] フィンガープリント: SHA256:j2r1qYo9BTSQMyaOcqsLR9bPdQ7F9R5K8c6j+j2k+3k\n`);
+        this.printOutput(`[+] コメント: admin@production-server\n`);
+        this.printOutput(`[!] この鍵を使用して複数サーバーへアクセス可能\n`);
+        
+        this.score += 50;
+    }
+
+    cmdPAYLOAD(args) {
+        if (!args) {
+            this.printOutput('使用法: payload [コマンド]\n');
+            this.printOutput(`\n説明: ペイロード生成\n`);
+            this.printOutput(`例: payload list\n`);
+            return;
+        }
+        
         this.printOutput(`利用可能なペイロード:\n`);
         this.printOutput(`- reverse_tcp\n`);
         this.printOutput(`- bind_tcp\n`);
@@ -2950,11 +3360,13 @@ hack web
     printOutput(text) {
         const lines = text.split('\n');
         for (const line of lines) {
-            if (line === '') continue;
-            
             const outputEl = document.createElement('div');
             outputEl.className = 'output-line';
-            outputEl.innerHTML = this.escapeHtml(line);
+            if (line === '') {
+                outputEl.innerHTML = '&nbsp;';
+            } else {
+                outputEl.innerHTML = this.escapeHtml(line);
+            }
             this.terminalOutput.appendChild(outputEl);
         }
         this.scrollToBottom();
@@ -2967,7 +3379,10 @@ hack web
     }
     
     scrollToBottom() {
-        this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        // 非同期でスクロール（DOMが完全に更新された後）
+        setTimeout(() => {
+            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        }, 0);
     }
     
     escapeHtml(text) {
@@ -4540,6 +4955,232 @@ hack web
     cmdOPENSTACK(args) {
         this.printOutput(`OpenStack クラウドプラットフォーム\n`);
         this.score += 30;
+    }
+
+    cmdADB(args) {
+        if (!args) {
+            this.printOutput('使用法: adb [コマンド]\n');
+            this.printOutput(`\n説明: Android Debug Bridgeを使用してAndroidデバイスをハック\n`);
+            this.printOutput(`例: adb shell dumpsys account\n`);
+            this.printOutput(`例: adb shell settings get secure\n`);
+            this.printOutput(`例: adb pull /data/data/com.example/databases\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] ADB接続を確立中...\n`);
+        this.printOutput(`[*] デバイス: emulator-5554\n`);
+        this.printOutput(`[*] OS: Android 13\n\n`);
+        this.printOutput(`[+] 接続成功! デバイスからデータを抽出中...\n\n`);
+        
+        if (args.includes('account')) {
+            this.printOutput(`--- Dumpsys Account Information ---\n`);
+            this.printOutput(`Package: com.google.android.gms\n`);
+            this.printOutput(`Account: user@gmail.com\n`);
+            this.printOutput(`Account: user@yahoo.com\n`);
+            this.printOutput(`Account: user@outlook.com\n`);
+            this.printOutput(`\n[+] 3個のメールアカウントが見つかりました\n`);
+        } else if (args.includes('secure')) {
+            this.printOutput(`bluetooth_address=AA:BB:CC:DD:EE:FF\n`);
+            this.printOutput(`wifi_ssid=HomeWifi\n`);
+            this.printOutput(`android_id=12345abcde67890\n`);
+            this.printOutput(`\n[+] デバイス設定を抽出しました\n`);
+        } else if (args.includes('databases')) {
+            this.printOutput(`[*] データベースを抽出中...\n`);
+            this.printOutput(`webviewCache.db\n`);
+            this.printOutput(`app_database.db\n`);
+            this.printOutput(`chrome_profile.db\n`);
+            this.printOutput(`\n[+] 3個のデータベースをダウンロード完了\n`);
+        } else {
+            this.printOutput(`[+] コマンド実行完了\n`);
+        }
+        
+        this.score += 45;
+    }
+
+    cmdIPHONEBACKUP(args) {
+        if (!args) {
+            this.printOutput('使用法: iphone-backup [オプション]\n');
+            this.printOutput(`\n説明: iPhoneのバックアップデータからパスワードを抽出\n`);
+            this.printOutput(`例: iphone-backup --extract-passwords\n`);
+            this.printOutput(`例: iphone-backup --list-accounts\n`);
+            this.printOutput(`例: iphone-backup --keychain-dump\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] iPhoneバックアップを分析中...\n`);
+        this.printOutput(`[*] デバイス: iPhone 15 Pro\n`);
+        this.printOutput(`[*] iOS: 17.2\n\n`);
+        
+        if (args.includes('extract') || args.includes('passwords')) {
+            this.printOutput(`[+] Keychainからパスワードを抽出中...\n\n`);
+            this.printOutput(`--- iPhone Keychain Passwords ---\n`);
+            this.printOutput(`iCloud: user@icloud.com : iCloud@Pass2024!\n`);
+            this.printOutput(`WiFi: HomeWifi : WiFi_Secure_Pass_2024\n`);
+            this.printOutput(`Mail: user@gmail.com : Gmail#Pass123!\n`);
+            this.printOutput(`Bank App: PIN-1234\n`);
+            this.printOutput(`Social: user : fb_password_2024!\n`);
+            this.printOutput(`\n[!] 5個のパスワードが抽出されました\n`);
+            this.score += 55;
+        } else if (args.includes('account')) {
+            this.printOutput(`[+] アカウント情報:\n\n`);
+            this.printOutput(`Apple ID: user@icloud.com\n`);
+            this.printOutput(`Phone Number: +81-90-1234-5678\n`);
+            this.printOutput(`Email Addresses:\n`);
+            this.printOutput(`  - user@icloud.com\n`);
+            this.printOutput(`  - user@gmail.com\n`);
+            this.printOutput(`  - user@yahoo.com\n`);
+            this.score += 35;
+        } else if (args.includes('keychain')) {
+            this.printOutput(`[+] Keychain完全ダンプ:\n\n`);
+            this.printOutput(`Service: AppleID\n`);
+            this.printOutput(`Account: user@icloud.com\n`);
+            this.printOutput(`Password: (decrypted) iCloud@Pass2024!\n\n`);
+            this.printOutput(`Service: WiFi\n`);
+            this.printOutput(`Account: HomeWifi\n`);
+            this.printOutput(`Password: (decrypted) WiFi_Secure_Pass_2024\n\n`);
+            this.printOutput(`[!] Keychain全体が復号化されました\n`);
+            this.score += 50;
+        }
+    }
+
+    cmdEXTRACTCREDS(device) {
+        if (!device) {
+            this.printOutput('使用法: extract-creds [デバイス名]\n');
+            this.printOutput(`\n説明: モバイルデバイスから全認証情報を抽出\n`);
+            this.printOutput(`例: extract-creds iphone\n`);
+            this.printOutput(`例: extract-creds android\n`);
+            this.printOutput(`例: extract-creds iphone ipad\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] ${device} から認証情報を抽出中...\n`);
+        this.printOutput(`[*] デバイスをマウント中...\n`);
+        this.printOutput(`[*] ファイルシステムを解析中...\n\n`);
+        this.printOutput(`[+] 認証情報が検出されました!\n\n`);
+        this.printOutput(`--- モバイル認証情報 ---\n`);
+        this.printOutput(`\n【オンラインサービス】\n`);
+        this.printOutput(`Google Account: user@gmail.com : google_app_password_2024\n`);
+        this.printOutput(`Microsoft Account: user@outlook.com : microsoft_secure_pass\n`);
+        this.printOutput(`iCloud Account: user@icloud.com : icloud_password_2024\n`);
+        this.printOutput(`\n【金融アプリケーション】\n`);
+        this.printOutput(`Banking App PIN: 1234\n`);
+        this.printOutput(`Cryptocurrency Wallet: seed_phrase_12_words_here\n`);
+        this.printOutput(`PayPal: user@gmail.com : paypal_secure_2024\n`);
+        this.printOutput(`\n【ソーシャルメディア】\n`);
+        this.printOutput(`Facebook: user : facebook_pass_2024\n`);
+        this.printOutput(`Twitter: @username : twitter_pass_secure\n`);
+        this.printOutput(`Instagram: user : instagram_password_2024\n`);
+        this.printOutput(`\n[!] 合計12個の認証情報が抽出されました\n`);
+        
+        this.score += 60;
+    }
+
+    cmdSMSDUMP(args) {
+        if (!args) {
+            this.printOutput('使用法: sms-dump [オプション]\n');
+            this.printOutput(`\n説明: SMSメッセージからパスワード・OTPを抽出\n`);
+            this.printOutput(`例: sms-dump --all\n`);
+            this.printOutput(`例: sms-dump --2fa\n`);
+            this.printOutput(`例: sms-dump --passwords\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] SMS メッセージを取得中...\n`);
+        this.printOutput(`[*] 合計 ${Math.floor(Math.random() * 500) + 100} 件のメッセージを検索\n\n`);
+        this.printOutput(`[+] パスワード関連メッセージを検出:\n\n`);
+        this.printOutput(`[2FA Codes]\n`);
+        this.printOutput(`Bank: Your verification code is 123456\n`);
+        this.printOutput(`Google: Your Google verification code is 789012\n`);
+        this.printOutput(`Amazon: Your Amazon security code is 345678\n`);
+        this.printOutput(`\n[Password Reset Links]\n`);
+        this.printOutput(`Facebook: Click here to reset: https://fb.me/reset?token=abc123xyz\n`);
+        this.printOutput(`Twitter: Confirm password change: https://t.co/reset?code=xyz789\n`);
+        this.printOutput(`LinkedIn: Verify login: https://linkedin.com/verify?code=def456\n`);
+        this.printOutput(`\n[Promotional Passwords]\n`);
+        this.printOutput(`Delivery Service: Your temporary password is TempPass2024!\n`);
+        this.printOutput(`\n[!] 9個の機密メッセージが抽出されました\n`);
+        
+        this.score += 55;
+    }
+
+    cmdAPPDATA(appName) {
+        if (!appName) {
+            this.printOutput('使用法: app-data [アプリケーション名]\n');
+            this.printOutput(`\n説明: インストール済みアプリケーションから認証情報を抽出\n`);
+            this.printOutput(`例: app-data chrome\n`);
+            this.printOutput(`例: app-data instagram\n`);
+            this.printOutput(`例: app-data banking\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] ${appName} のアプリケーションデータを抽出中...\n`);
+        this.printOutput(`[*] SharedPreferences を読み込み中...\n`);
+        this.printOutput(`[*] ローカルデータベースを解析中...\n\n`);
+        this.printOutput(`[+] アプリケーションデータが検出されました!\n\n`);
+        
+        if (appName.toLowerCase().includes('chrome') || appName.toLowerCase().includes('browser')) {
+            this.printOutput(`--- Chrome/Browser Passwords ---\n`);
+            this.printOutput(`facebook.com : user : facebook_password_123\n`);
+            this.printOutput(`twitter.com : user : twitter_secure_pass\n`);
+            this.printOutput(`github.com : developer : github_token_abc123xyz\n`);
+            this.printOutput(`aws.amazon.com : admin : aws_access_key_12345\n`);
+            this.printOutput(`\n[!] 4個の保存されたパスワードが見つかりました\n`);
+            this.score += 50;
+        } else if (appName.toLowerCase().includes('insta') || appName.toLowerCase().includes('facebook')) {
+            this.printOutput(`--- Social Media App Data ---\n`);
+            this.printOutput(`Instagram Session Token: ig_session_abc123def456\n`);
+            this.printOutput(`Instagram API Token: gql_abc123xyz789\n`);
+            this.printOutput(`Facebook Access Token: EAA...long_token_here\n`);
+            this.printOutput(`Account: user@gmail.com\n`);
+            this.printOutput(`\n[!] ソーシャルメディア認証情報を抽出しました\n`);
+            this.score += 48;
+        } else if (appName.toLowerCase().includes('bank') || appName.toLowerCase().includes('pay')) {
+            this.printOutput(`--- Banking/Payment App Data ---\n`);
+            this.printOutput(`Account Number: 1234567890\n`);
+            this.printOutput(`PIN: 1234\n`);
+            this.printOutput(`API Keys: bank_api_key_abc123xyz\n`);
+            this.printOutput(`Session Tokens: session_12345_abcde\n`);
+            this.printOutput(`\n[!] 金融アプリ認証情報を抽出しました\n`);
+            this.score += 55;
+        } else {
+            this.printOutput(`--- ${appName} Data ---\n`);
+            this.printOutput(`Username: user\n`);
+            this.printOutput(`Email: user@example.com\n`);
+            this.printOutput(`Auth Token: app_token_xyz123abc\n`);
+            this.printOutput(`API Key: app_api_key_12345\n`);
+            this.printOutput(`\n[!] アプリケーション認証情報を抽出しました\n`);
+            this.score += 50;
+        }
+    }
+
+    cmdNOTIFICATIONLOGS(args) {
+        if (!args) {
+            this.printOutput('使用法: notification-logs [オプション]\n');
+            this.printOutput(`\n説明: デバイスの通知ログからパスワード情報を抽出\n`);
+            this.printOutput(`例: notification-logs --all\n`);
+            this.printOutput(`例: notification-logs --recent\n`);
+            this.printOutput(`例: notification-logs --sensitive\n`);
+            return;
+        }
+        
+        this.printOutput(`[*] 通知ログを読み込み中...\n`);
+        this.printOutput(`[*] 合計 ${Math.floor(Math.random() * 1000) + 500} 件の通知を検索\n\n`);
+        this.printOutput(`[+] 機密情報を含む通知:\n\n`);
+        this.printOutput(`[Notification History]\n`);
+        this.printOutput(`09:15 - Bank: Your transaction of $500 was approved\n`);
+        this.printOutput(`09:30 - Gmail: New login detected at 09:30 from IP 192.168.1.100\n`);
+        this.printOutput(`10:45 - Amazon: Order #123456 ready for delivery\n`);
+        this.printOutput(`11:20 - Twitter: Someone tried to reset your password\n`);
+        this.printOutput(`12:00 - Apple: Verify your Apple ID at iCloud.com\n`);
+        this.printOutput(`13:15 - Google: 2FA Code: 456789\n`);
+        this.printOutput(`14:30 - AWS: Your root account was accessed from us-west-2\n`);
+        this.printOutput(`15:45 - Crypto Exchange: Withdrawal limit increased to 10 BTC\n`);
+        this.printOutput(`16:20 - Work VPN: Client disconnected from 192.168.50.100\n`);
+        this.printOutput(`17:00 - Password Manager: Sync failed, retry?\n`);
+        this.printOutput(`\n[!] 10個の機密通知が復元されました\n`);
+        this.printOutput(`[!] IPアドレス、トークンコード、アカウント情報が露出\n`);
+        
+        this.score += 52;
     }
 }
 

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>改善コマンド テスト</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .container {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        h1 {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        h2 {
+            color: #00ffff;
+            margin-top: 30px;
+            border-bottom: 2px solid #00ffff;
+            padding-bottom: 10px;
+        }
+        .command-output {
+            background: #0a0a0a;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-x: auto;
+        }
+        .improvement {
+            background: #1a2a1a;
+            border-left: 4px solid #00ff00;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        .command-name {
+            color: #ffff00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 ハッカータイパー - 改善コマンド テスト</h1>
+    
+    <div class="container">
+        <h2>📋 改善された検索・調査コマンド</h2>
+        
+        <h3><span class="command-name">curl</span> コマンド</h3>
+        <div class="improvement">
+            <strong>改善内容:</strong>
+            <ul>
+                <li>HTTPレスポンスヘッダーを表示</li>
+                <li>ダウンロード進度バーを表示</li>
+                <li>入力URLのドメイン情報を反映</li>
+                <li>HTML コンテンツサンプルを表示</li>
+                <li>ランダムなIPアドレスを表示</li>
+            </ul>
+        </div>
+        <div class="command-output">% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100 2847  100 2847    0     0   8456      0 --:--:-- --:--:-- --:--:--  0.34s
+
+HTTP/1.1 200 OK
+Date: Fri, 21 Feb 2025 10:15:30 GMT
+Server: nginx/1.21.0
+Content-Type: text/html; charset=utf-8
+Content-Length: 2847
+Connection: keep-alive
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>example.com</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+</head>
+<body>
+  <h1>Welcome to example.com</h1>
+  <p>This is a web server hosted at example.com</p>
+  <p>IP Address: 192.168.1.45</p>
+  <p>Last Updated: 2025-02-21 10:15:30</p>
+</body>
+</html></div>
+
+        <h3><span class="command-name">wget</span> コマンド</h3>
+        <div class="improvement">
+            <strong>改善内容:</strong>
+            <ul>
+                <li>DNS解決プロセスを表示</li>
+                <li>接続状況を詳細に表示</li>
+                <li>ファイルサイズを表示</li>
+                <li>ダウンロード進度とスピードを表示</li>
+            </ul>
+        </div>
+        <div class="command-output">--Friday, 02/21/2025 10:15:30 AM--  https://example.com/
+DNS resolution... 203.45.67.89
+Connecting to example.com:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 2847 (2.8K) [text/html]
+Saving to: 'index.html'
+
+2847      100%  [========================================] 2.8K in 0.25s
+
+Friday, 02/21/2025 10:15:31 AM (2.8K/s) - 'index.html' saved [2847/2847]</div>
+
+        <h3><span class="command-name">dig</span> コマンド</h3>
+        <div class="improvement">
+            <strong>改善内容:</strong>
+            <ul>
+                <li>完全なDNSレスポンス情報を表示</li>
+                <li>ランダムなIPアドレスを生成</li>
+                <li>AUTHORITY SECTIONを含める</li>
+                <li>クエリ時間やサーバー情報を表示</li>
+            </ul>
+        </div>
+        <div class="command-output">; <<>> DiG 9.16.1 <<>> example.com
+; (1 server found)
+; global options: +cmd
+; Got answer:
+; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 12345
+; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 1
+
+; QUESTION SECTION:
+; example.com.                     IN  A
+
+; ANSWER SECTION:
+example.com.    300  IN  A    192.168.45.123
+
+; AUTHORITY SECTION:
+example.com.    172800  IN  NS   ns1.example.com.
+example.com.    172800  IN  NS   ns2.example.com.
+
+; Query time: 45 msec
+; SERVER: 8.8.8.8#53(8.8.8.8)
+; WHEN: Fri, 21 Feb 2025 10:15:30 UTC
+; MSG SIZE  rcvd: 256</div>
+
+        <h3><span class="command-name">whois</span> コマンド</h3>
+        <div class="improvement">
+            <strong>改善内容:</strong>
+            <ul>
+                <li>詳細なドメイン登録情報を表示</li>
+                <li>ランダムな登録日時を生成</li>
+                <li>ネームサーバー情報を表示</li>
+                <li>登録者情報を含める</li>
+            </ul>
+        </div>
+        <div class="command-output">Domain Name: EXAMPLE.COM
+Registry Domain ID: D123456789-AGRS
+Registrar WHOIS Server: whois.example.com
+Registrar URL: http://www.example.com
+Updated Date: 2025-02-21
+Creation Date: 2018-05-12
+Registry Expiry Date: 2026-03-15
+Registrar: Example Registrar, Inc.
+Registrar IANA ID: 12345
+Registrant Name: Domain Owner
+Registrant Organization: Example Organization
+Registrant Street: 123 Main Street
+Registrant City: Example City
+Registrant State: EX
+Registrant Postal Code: 12345
+Registrant Country: US
+Registrant Email: admin@example.com
+Name Server: ns1.example.com (210.150.180.45)
+Name Server: ns2.example.com (172.16.20.105)
+DNSSEC: unsigned</div>
+
+        <h3><span class="command-name">nmap</span> コマンド</h3>
+        <div class="improvement">
+            <strong>改善内容:</strong>
+            <ul>
+                <li>複数のポートとサービス情報を表示</li>
+                <li>バージョン情報を含める</li>
+                <li>OS検出情報を表示</li>
+                <li>レイテンシ情報を表示</li>
+            </ul>
+        </div>
+        <div class="command-output">Starting Nmap 7.92 at Friday, 02/21/2025 10:15:30 AM
+Nmap scan report for example.com (192.168.1.45)
+Host is up (0.0234s latency).
+Skipping host example.com due to --exclude-hosts option.
+Nmap done at Friday, 02/21/2025 10:15:35 AM; 1 IP address (1 host up) scanned in 4.53s
+
+Port Analysis:
+Not shown: 991 closed ports
+PORT    STATE SERVICE VERSION
+22/tcp  open  ssh     OpenSSH 7.4
+80/tcp  open  http    Apache httpd 2.4.6
+443/tcp open  https   Apache httpd 2.4.6 (SSL)
+3306/tcp open mysql   MySQL 5.7.26
+5432/tcp open postgres PostgreSQL 11.4
+8080/tcp open http    Tomcat 9.0
+
+OS Detection:
+OS: Linux 3.10 - 4.8
+Aggressive OS guesses: Linux 4.15-4.19, Linux 5.0</div>
+
+        <h3><span class="command-name">shodan</span> コマンド</h3>
+        <div class="improvement">
+            <strong>改善内容:</strong>
+            <ul>
+                <li>複数の検索結果を表示</li>
+                <li>各結果にIP、組織、OS、サービス情報を表示</li>
+                <li>ランダムな検索結果数を生成</li>
+            </ul>
+        </div>
+        <div class="command-output">[*] Shodan API: 検索中...
+[*] クエリ: "Apache"
+[+] 検索結果: 4567 個のデバイスが見つかりました
+
+Top Results:
+[1] 192.168.45.123:80
+    Organization: Example Corp
+    OS: Linux
+    Service: Apache/2.4.6
+
+[2] 203.45.67.89:22
+    Organization: Web Hosting Co
+    OS: Linux (Ubuntu)
+    Service: OpenSSH 7.4
+
+[3] 172.16.20.105:3306
+    Organization: Database Services
+    OS: Linux
+    Service: MySQL 5.7</div>
+    </div>
+
+    <div class="container">
+        <h2>✨ 主な改善点</h2>
+        <ul>
+            <li><strong>generateIP()メソッド追加</strong>: ランダムなIPアドレスを生成</li>
+            <li><strong>コンテキスト認識</strong>: 入力されたURL・ドメインをレスポンスに反映</li>
+            <li><strong>詳細な出力</strong>: 実際のツールと同様の詳細情報を表示</li>
+            <li><strong>ランダム性</strong>: 毎回異なる結果を返すことで、より現実的に</li>
+            <li><strong>複数結果表示</strong>: shodan などでリアルな検索結果を複数表示</li>
+            <li><strong>タイムスタンプ</strong>: 実行時刻を含めてより現実的に</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2>🚀 実装状況</h2>
+        <p>✅ <strong>curl</strong> - HTTPレスポンスとコンテンツを表示</p>
+        <p>✅ <strong>wget</strong> - ファイルダウンロード進度を表示</p>
+        <p>✅ <strong>dig</strong> - DNS情報を詳細表示</p>
+        <p>✅ <strong>whois</strong> - ドメイン登録情報を詳細表示</p>
+        <p>✅ <strong>nmap</strong> - ポートスキャン結果とサービス情報を表示</p>
+        <p>✅ <strong>shodan</strong> - デバイス検索結果を複数表示</p>
+    </div>
+
+    <div class="container">
+        <h2>📝 使用例</h2>
+        <pre>$ curl https://example.com
+$ wget https://example.com/file.zip
+$ dig example.com
+$ whois example.com
+$ nmap 192.168.1.1
+$ shodan search "Apache"</pre>
+    </div>
+</body>
+</html>
