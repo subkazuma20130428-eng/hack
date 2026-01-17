@@ -216,6 +216,7 @@ def find_opponent(request):
                         break
             
             if opponent:
+                # マッチング成功
                 battle_id = f"{player_name}_{opponent}_{datetime.now().timestamp()}"
                 
                 # バトルセッション作成
@@ -224,6 +225,8 @@ def find_opponent(request):
                     'player2': opponent,
                     'player1_commands': [],
                     'player2_commands': [],
+                    'player1_typing': '',
+                    'player2_typing': '',
                     'started_at': datetime.now().isoformat()
                 }
                 
@@ -233,8 +236,10 @@ def find_opponent(request):
                     'opponent': opponent
                 })
             else:
-                # 自分を待機プレイヤーに追加
-                waiting_players.append(player_name)
+                # 自分を待機プレイヤーに追加（重複は避ける）
+                if player_name not in waiting_players:
+                    waiting_players.append(player_name)
+                
                 return JsonResponse({
                     'status': 'waiting',
                     'message': 'マッチング待機中...'

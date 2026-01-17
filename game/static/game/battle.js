@@ -35,6 +35,7 @@ class BattleArena {
         this.battleActive = true;
         this.battleId = null;
         this.lastFetchedOpponentCommands = 0;
+        this.findingOpponent = false;  // マッチング中フラグ
         
         // CSRFトークン取得
         const csrfElement = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -60,6 +61,12 @@ class BattleArena {
     }
     
     findOpponent() {
+        // すでにマッチング中なら繰り返さない
+        if (this.findingOpponent) {
+            return;
+        }
+        
+        this.findingOpponent = true;
         this.printOutput('対戦相手を探索中...\n', this.playerOutput);
         
         fetch('/api/find-opponent/', {
@@ -75,19 +82,27 @@ class BattleArena {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'found') {
+                // マッチング成功
                 this.battleId = data.battle_id;
                 this.opponentName.textContent = data.opponent;
+                this.findingOpponent = false;  // フラグをクリア
                 this.initializeBattle();
                 this.startOpponentPolling();
             } else if (data.status === 'waiting') {
                 this.printOutput(`マッチング待機中...\n`, this.playerOutput);
-                // 3秒後に再度検索
-                setTimeout(() => this.findOpponent(), 3000);
+                // 2秒後に再度検索
+                this.findingOpponent = false;  // フラグをクリアして次の試行を許可
+                setTimeout(() => this.findOpponent(), 2000);
             }
         })
         .catch(err => {
             console.error('対戦相手検索エラー:', err);
+            this.findingOpponent = false;  // エラー時もフラグクリア
             this.printOutput('エラー: 対戦相手を探せませんでした\n', this.playerOutput);
+            // エラーでも再試行
+            setTimeout(() => this.findOpponent(), 3000);
+        });
+    }
         });
     }
     
