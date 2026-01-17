@@ -1755,7 +1755,8 @@ hack web
                 this.cmdOPENSTACK(args);
                 break;
             default:
-                this.printOutput(`コマンド '${command}' が見つかりません\n`);
+                this.cmdRandomOutput(command);
+                this.score += Math.floor(Math.random() * 15) + 10;
         }
         
         // 入力フィールドクリア
@@ -5238,6 +5239,93 @@ hack web
         this.printOutput(`[!] すべての証跡を削除中...\n\n`);
         
         this.printOutput(`root@${target}:~# \n`);
+    }
+
+    cmdRandomOutput(command) {
+        const randomOutputs = [
+            // ログファイル出力
+            () => {
+                this.printOutput(`[${new Date().toISOString()}] Processing command: ${command}\n`);
+                this.printOutput(`DEBUG: Parsing arguments...\n`);
+                this.printOutput(`DEBUG: Module loaded from /usr/lib/x86_64-linux-gnu/\n`);
+                this.printOutput(`DEBUG: Initializing memory pool (2048MB)\n`);
+                this.printOutput(`[OK] Operation completed successfully\n`);
+                this.printOutput(`INFO: Session ID: ${Math.random().toString(36).substring(7)}\n`);
+            },
+            // システムメッセージ
+            () => {
+                this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] usb 1-1: new high-speed USB device number 2\n`);
+                this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] usb 1-1: New USB device found\n`);
+                this.printOutput(`kernel: [${Math.random().toString().substring(2, 8)}] usb-storage 1-1:1.0: USB Mass Storage device detected\n`);
+                this.printOutput(`systemd: Started Database Service.\n`);
+                this.printOutput(`apache2[${Math.floor(Math.random() * 10000)}]: [notice] Apache/2.4.41 configured\n`);
+            },
+            // 処理ログ
+            () => {
+                for(let i = 0; i < 8; i++) {
+                    this.printOutput(`Processing: ${Math.random().toString(36).substring(2, 10)} [${Math.floor(Math.random() * 100)}%]\n`);
+                }
+                this.printOutput(`Compilation successful\n`);
+                this.printOutput(`Linking modules...\n`);
+                this.printOutput(`Build completed in ${Math.floor(Math.random() * 5000)}ms\n`);
+            },
+            // ネットワーク出力
+            () => {
+                this.printOutput(`CONNECT: Establishing connection to remote server\n`);
+                this.printOutput(`DNS resolved: ${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}\n`);
+                this.printOutput(`SSL/TLS Handshake completed\n`);
+                this.printOutput(`Certificate verified\n`);
+                this.printOutput(`Bytes sent: ${Math.floor(Math.random() * 100000)}\n`);
+                this.printOutput(`Bytes received: ${Math.floor(Math.random() * 200000)}\n`);
+            },
+            // パッケージ管理
+            () => {
+                this.printOutput(`Reading package lists... Done\n`);
+                this.printOutput(`Building dependency tree\n`);
+                this.printOutput(`${Math.floor(Math.random() * 50)} upgraded, ${Math.floor(Math.random() * 30)} newly installed\n`);
+                this.printOutput(`Processing triggers for ${command}...\n`);
+                this.printOutput(`Setting up packages...\n`);
+                this.printOutput(`Done\n`);
+            },
+            // ファイルシステム操作
+            () => {
+                this.printOutput(`Scanning file system...\n`);
+                for(let i = 0; i < 6; i++) {
+                    this.printOutput(`Indexing directory: /var/${Math.random().toString(36).substring(2, 8)}/\n`);
+                }
+                this.printOutput(`Total files: ${Math.floor(Math.random() * 50000)}\n`);
+                this.printOutput(`Total size: ${Math.floor(Math.random() * 500)}GB\n`);
+            },
+            // セキュリティスキャン
+            () => {
+                this.printOutput(`[*] Security scan initiated\n`);
+                this.printOutput(`[*] Scanning for vulnerabilities...\n`);
+                this.printOutput(`[+] Found ${Math.floor(Math.random() * 20)} potential threats\n`);
+                this.printOutput(`[+] Quarantined ${Math.floor(Math.random() * 10)} suspicious files\n`);
+                this.printOutput(`[*] Running deep analysis...\n`);
+                this.printOutput(`[OK] Scan completed - System clean\n`);
+            },
+            // データベース操作
+            () => {
+                this.printOutput(`Connecting to database server...\n`);
+                this.printOutput(`Authentication successful\n`);
+                this.printOutput(`Executing query: SELECT * FROM ${command}_backup WHERE timestamp > ${Date.now()}\n`);
+                this.printOutput(`Query returned ${Math.floor(Math.random() * 1000)} rows\n`);
+                this.printOutput(`Replication lag: ${Math.floor(Math.random() * 100)}ms\n`);
+            },
+            // クラウド同期
+            () => {
+                this.printOutput(`[SYNC] Initiating cloud synchronization\n`);
+                this.printOutput(`[SYNC] Connecting to cloud server...\n`);
+                for(let i = 0; i < 5; i++) {
+                    this.printOutput(`[SYNC] Uploading: file_${i}.dat (${Math.floor(Math.random() * 100)}MB)\n`);
+                }
+                this.printOutput(`[OK] All files synchronized\n`);
+            }
+        ];
+
+        const randomIndex = Math.floor(Math.random() * randomOutputs.length);
+        randomOutputs[randomIndex]();
     }
 }
 
