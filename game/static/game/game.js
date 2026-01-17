@@ -1760,10 +1760,22 @@ hack web
                 this.score += Math.floor(Math.random() * 15) + 10;
         }
         
-        // コマンド実行後にスクロール
+        // コマンド実行後にスクロール（複数回確認）
         setTimeout(() => {
             this.scrollToBottom();
         }, 100);
+        
+        setTimeout(() => {
+            this.scrollToBottom();
+        }, 300);
+        
+        setTimeout(() => {
+            this.scrollToBottom();
+        }, 600);
+        
+        setTimeout(() => {
+            this.scrollToBottom();
+        }, 1000);
         
         // 入力フィールドクリア
         this.commandInput.value = '';
@@ -3377,13 +3389,27 @@ hack web
                 }
                 
                 this.terminalOutput.appendChild(outputEl);
+                
+                // 各行追加時にもスクロール
                 this.scrollToBottom();
                 
                 // 最後の行の処理が終わったら追加のスクロール
                 if (index === lines.length - 1) {
                     setTimeout(() => {
                         this.scrollToBottom();
-                    }, 100);
+                    }, 50);
+                    setTimeout(() => {
+                        this.scrollToBottom();
+                    }, 150);
+                    setTimeout(() => {
+                        this.scrollToBottom();
+                    }, 300);
+                    setTimeout(() => {
+                        this.scrollToBottom();
+                    }, 500);
+                    setTimeout(() => {
+                        this.scrollToBottom();
+                    }, 1000);
                 }
             }, index * 5); // 5msごとに行を表示
         });
@@ -3396,23 +3422,51 @@ hack web
     }
     
     scrollToBottom() {
-        // 複数回スクロール確認を行い、確実にスクロール
-        // 即座にスクロール
+        // 最後の要素を取得
+        const lastLine = this.terminalOutput.lastElementChild;
+        
+        if (lastLine) {
+            // scrollIntoView を使用して確実にスクロール
+            lastLine.scrollIntoView({behavior: 'smooth', block: 'end'});
+        }
+        
+        // 念のため複数回 scrollTop でも確認
         this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
         
-        // 非同期でも確認（アニメーション中の場合）
         setTimeout(() => {
             this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+            if (lastLine) {
+                lastLine.scrollIntoView({behavior: 'auto', block: 'end'});
+            }
         }, 10);
+        
+        setTimeout(() => {
+            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        }, 30);
         
         setTimeout(() => {
             this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
         }, 50);
         
-        // 最後のアニメーション後もスクロール
+        setTimeout(() => {
+            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        }, 100);
+        
+        setTimeout(() => {
+            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        }, 150);
+        
+        setTimeout(() => {
+            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        }, 300);
+        
         setTimeout(() => {
             this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
         }, 500);
+        
+        setTimeout(() => {
+            this.terminalOutput.scrollTop = this.terminalOutput.scrollHeight;
+        }, 1000);
     }
     
     escapeHtml(text) {
