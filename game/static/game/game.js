@@ -3347,17 +3347,25 @@ hack web
     
     printOutput(text) {
         const lines = text.split('\n');
-        for (const line of lines) {
-            const outputEl = document.createElement('div');
-            outputEl.className = 'output-line';
-            if (line === '') {
-                outputEl.innerHTML = '&nbsp;';
-            } else {
-                outputEl.innerHTML = this.escapeHtml(line);
-            }
-            this.terminalOutput.appendChild(outputEl);
-        }
-        this.scrollToBottom();
+        lines.forEach((line, index) => {
+            setTimeout(() => {
+                const outputEl = document.createElement('div');
+                outputEl.className = 'output-line';
+                
+                // アニメーションクラスを追加
+                outputEl.style.opacity = '0';
+                outputEl.style.animation = `fadeInLine 0.3s ease-in forwards`;
+                
+                if (line === '') {
+                    outputEl.innerHTML = '&nbsp;';
+                } else {
+                    outputEl.innerHTML = this.escapeHtml(line);
+                }
+                
+                this.terminalOutput.appendChild(outputEl);
+                this.scrollToBottom();
+            }, index * 5); // 5msごとに行を表示
+        });
     }
     
     updatePrompt() {
