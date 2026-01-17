@@ -258,10 +258,15 @@ def battle_command(request):
             player_name = data.get('player_name')
             command = data.get('command')
             
+            print(f"[DEBUG] battle_command: battle_id={battle_id}, player={player_name}, cmd={command}")
+            print(f"[DEBUG] active_battles keys: {list(active_battles.keys())}")
+            
             if battle_id not in active_battles:
+                print(f"[DEBUG] バトル見つかりません: {battle_id}")
                 return JsonResponse({'status': 'error', 'message': 'バトルが見つかりません'}, status=400)
             
             battle = active_battles[battle_id]
+            print(f"[DEBUG] battle info: player1={battle['player1']}, player2={battle['player2']}")
             
             # プレイヤーのコマンドを保存
             if player_name == battle['player1']:
@@ -269,11 +274,18 @@ def battle_command(request):
                     'command': command,
                     'timestamp': datetime.now().isoformat()
                 })
+                print(f"[DEBUG] player1 コマンド追加: {command}")
             elif player_name == battle['player2']:
                 battle['player2_commands'].append({
                     'command': command,
                     'timestamp': datetime.now().isoformat()
                 })
+                print(f"[DEBUG] player2 コマンド追加: {command}")
+            else:
+                print(f"[DEBUG] プレイヤーマッチなし")
+            
+            print(f"[DEBUG] p1_commands: {battle['player1_commands']}")
+            print(f"[DEBUG] p2_commands: {battle['player2_commands']}")
             
             return JsonResponse({
                 'status': 'success',

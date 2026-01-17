@@ -158,6 +158,8 @@ class BattleArena {
             return;
         }
         
+        console.log(`コマンド送信: "${input}", battleId: "${this.battleId}"`);
+        
         // プレイヤーのコマンド表示
         this.printOutput(`root@terminal:~$ ${input}\n`, this.playerOutput);
         this.playerInput.value = '';
@@ -180,6 +182,10 @@ class BattleArena {
                 command: input
             })
         })
+        .then(response => response.json())
+        .then(data => {
+            console.log('コマンド送信結果:', data);
+        })
         .catch(err => console.error('コマンド送信エラー:', err));
         
         // スコア更新
@@ -192,13 +198,16 @@ class BattleArena {
             if (!this.battleId) return;
             
             // 相手のコマンドを取得
-            fetch(`/api/get-opponent-commands/?battle_id=${this.battleId}&player_name=${this.playerName.textContent}`)
+            fetch(`/api/get-opponent-commands/?battle_id=${this.battleId}&player_name=${encodeURIComponent(this.playerName.textContent)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success' && data.commands) {
                         // 新しいコマンドのみ表示
                         const newCommands = data.commands.slice(this.lastFetchedOpponentCommands);
+                        console.log(`新しいコマンド数: ${newCommands.length}, 合計: ${data.commands.length}`);
+                        
                         newCommands.forEach(cmd => {
+                            console.log(`相手コマンド受信: ${cmd.command}`);
                             this.printOutput(`opponent:~$ ${cmd.command}\n`, this.opponentOutput);
                             const result = this.getCommandResult(cmd.command);
                             this.printOutput(result + '\n', this.opponentOutput);
@@ -211,7 +220,7 @@ class BattleArena {
                 .catch(err => console.error('相手コマンド取得エラー:', err));
             
             // 相手の入力中テキストを取得
-            fetch(`/api/get-opponent-typing/?battle_id=${this.battleId}&player_name=${this.playerName.textContent}`)
+            fetch(`/api/get-opponent-typing/?battle_id=${this.battleId}&player_name=${encodeURIComponent(this.playerName.textContent)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
