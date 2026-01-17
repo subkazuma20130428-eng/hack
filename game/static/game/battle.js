@@ -103,8 +103,6 @@ class BattleArena {
             setTimeout(() => this.findOpponent(), 3000);
         });
     }
-        });
-    }
     
     initializeBattle() {
         this.playerOutput.innerHTML = '';

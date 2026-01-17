@@ -16,4 +16,5 @@ urlpatterns = [
     path('api/get-opponent-commands/', views.get_opponent_commands, name='get_opponent_commands'),
     path('api/update-player-typing/', views.update_player_typing, name='update_player_typing'),
     path('api/get-opponent-typing/', views.get_opponent_typing, name='get_opponent_typing'),
+    path('api/debug-battles/', views.debug_battles, name='debug_battles'),
 ]

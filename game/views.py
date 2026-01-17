@@ -379,3 +379,19 @@ def get_opponent_typing(request):
     
     return JsonResponse({'status': 'error'}, status=400)
 
+def debug_battles(request):
+    """デバッグ用：現在のバトル情報を表示"""
+    return JsonResponse({
+        'waiting_players': waiting_players,
+        'active_battles': {
+            battle_id: {
+                'player1': battle['player1'],
+                'player2': battle['player2'],
+                'player1_commands_count': len(battle.get('player1_commands', [])),
+                'player2_commands_count': len(battle.get('player2_commands', [])),
+                'player1_commands': battle.get('player1_commands', []),
+                'player2_commands': battle.get('player2_commands', []),
+            }
+            for battle_id, battle in active_battles.items()
+        }
+    })
