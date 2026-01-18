@@ -1,3 +1,4 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
@@ -57,8 +58,10 @@ def submit_score(request):
         except:
             return JsonResponse({'status': 'error'}, status=400)
     
+def send_chat_message(request):
     return JsonResponse({'status': 'error'}, status=400)
 
+@csrf_exempt
 def send_chat_message(request):
     """チャットメッセージを送信"""
     if request.method == 'POST':
@@ -103,6 +106,7 @@ def get_chat_messages(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
+@csrf_exempt
 def register_account(request):
     """アカウント登録"""
     if request.method == 'POST':
@@ -133,6 +137,7 @@ def register_account(request):
     
     return JsonResponse({'status': 'error'}, status=400)
 
+@csrf_exempt
 def login_account(request):
     """アカウントログイン"""
     if request.method == 'POST':
@@ -164,6 +169,7 @@ def login_account(request):
     
     return JsonResponse({'status': 'error'}, status=400)
 
+@csrf_exempt
 def logout_account(request):
     """アカウントログアウト"""
     if request.method == 'POST':
