@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-_*$g+(eqqd+x#bexu%y&2b)+3b1)4&mfny5q%*w4)cv+p09uj6
 # 本番用
 DEBUG = False
 
-ALLOWED_HOSTS = ["hack-h3c0.onrender.com"]
+ALLOWED_HOSTS = ["hacker-typer.onrender.com", ".onrender.com"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
